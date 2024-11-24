@@ -14,8 +14,6 @@
       <script>
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const topic = urlParams.get('topic');
-        const subtopic = urlParams.get('subtopic');
         const graph = urlParams.get('graph');
         const version = urlParams.get('version') || "0.3.1";
         let kgjs=document.createElement("script");
