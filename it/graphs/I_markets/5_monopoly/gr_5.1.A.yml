@@ -1,0 +1,215 @@
+params:
+- {name: showProfit, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+
+- {name: x, value: 20, min: 0, max: 120}
+
+- {name: fc, value: 0, min: 0, max: 200, round: 5}
+
+# inverse demand a - bx
+- {name: a, value: 6, min: 5, max: 5, round: 0.1}
+- {name: b, value: 0.05, min: 0.05, max: 0.05, round: 0.05}
+
+# total cost cx + dx^2
+- {name: c, value: 0, min: 0, max: 0.05, round: 0.05}
+- {name: d, value: 0.025, min: 0.025, max: 0.05, round: 0.025}
+
+calcs:
+  tc: params.fc + params.c * params.x + params.d * (params.x)^2
+  vc: params.c * params.x + params.d * (params.x)^2
+  atc: params.fc / params.x + params.c + params.d * (params.x)
+  avc: params.c + params.d * (params.x)
+  mc: params.c + 2 * params.d * params.x
+  p: params.a - params.b * params.x
+  tr: calcs.p * params.x
+  mr: params.a - 2 * params.b * params.x
+  xopt: ((params.a)-(params.c)) / (2*((params.b)+(params.d)))
+  totalrevenue: (params.a - params.b * calcs.xopt) * calcs.xopt
+  totalcost: params.fc + params.c * calcs.xopt + params.d * (calcs.xopt)^2
+  tcazz: max(calcs.tc,calcs.tr)
+  cazz: min(0,calcs.mr)
+
+aspectRatio: 0.7
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 125
+        ticks: 5
+      yAxis:
+        max: 300
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [125, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 300]
+                text: "` \\\\text{euro}  `"
+                xPixelOffset: -6
+
+# points
+        - Point: {coordinates: [params.x, calcs.tr], droplines: {horizontal: calcs.tr.toFixed(1)}, color: Green, r: 4}
+        - Point: {coordinates: [params.x, calcs.tc], droplines: {horizontal: calcs.tc.toFixed(1)}, color: Brown, r: 4}
+
+# TC=VC curve
+
+        - Curve:
+            fn: params.c * params.x + params.d * (x)^2
+            color: Brown
+            label:
+              text: TC=VC
+              x: 100
+              position: l
+              bgcolor: none
+            strokeWidth: 1.7
+
+# TR curve
+
+        - Curve:
+            fn: (x) * ( params.a - params.b * (x) )
+            color: Green
+            label:
+              text: TR
+              x: 110
+              position: l
+              bgcolor: none
+            strokeWidth: 1.7
+
+# tangent to TC
+        - Line:
+            point: [params.x,calcs.tc]
+            slope: calcs.mc
+            color: Black
+            lineStyle: dashed
+            strokeWidth: 0.8
+
+# tangent to TR
+        - Line:
+            point: [params.x,calcs.tr]
+            slope: calcs.mr
+            color: Black
+            lineStyle: dashed
+            strokeWidth: 0.8
+
+# profit / loss
+        - Segment: {a: [params.x,calcs.tr], b: [params.x,calcs.tc], color: Blue, strokeWidth: 3, show: calcs.tr > calcs.tc}
+        - Segment: {a: [params.x,calcs.tr], b: [params.x,calcs.tc], color: Red, strokeWidth: 3, show: calcs.tr < calcs.tc}
+
+# dropline x
+        - Segment:
+            a: [params.x,calcs.tcazz]
+            b: [params.x,0]
+            color: Black
+            lineStyle: dotted
+            strokeWidth: 1
+
+
+    bottomGraph: 
+      xAxis:
+        max: 125
+        ticks: 5
+      yAxis:
+        min: -2
+        max: 6.5
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [125, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 6.5]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: -30
+
+# points
+        - Point: {coordinates: [params.x, calcs.p], droplines: {horizontal: calcs.p.toFixed(1)}, color: Blue, r: 4}
+        - Point: {coordinates: [params.x, calcs.mr], droplines: {horizontal: calcs.mr.toFixed(1)}, color: Green, r: 4}
+        - Point: {coordinates: [params.x, calcs.atc], droplines: {horizontal: calcs.atc.toFixed(1)}, color: Brown, r: 4}
+        - Point: {coordinates: [params.x, calcs.mc], droplines: {horizontal: calcs.mc.toFixed(1)}, color: Red, r: 4}
+
+# ATC=AVC curve
+
+        - Curve:
+            fn: params.fc / (x) + params.c + params.d * (x)
+            color: Brown
+            label:
+              text: ATC = AVC
+              x: 120
+              position: b
+              bgcolor: none
+            strokeWidth: 1.7
+
+# MC curve
+
+        - Curve:
+            fn: params.c + 2 * params.d * (x)
+            color: Red
+            label:
+              text: MC
+              x: 110
+              position: br
+              bgcolor: none
+            strokeWidth: 1.7
+
+# MR curve
+
+        - Curve:
+            fn: params.a - 2 * params.b * (x)
+            color: Green
+            label:
+              text: MR
+              x: 75
+              position: l
+              bgcolor: none
+            strokeWidth: 1.7
+
+# inverse demand curve
+
+        - Curve:
+            fn: params.a - params.b * (x)
+            color: Blue
+            max: 120
+            label:
+              text: D
+              x: 110
+              position: bl
+              bgcolor: none
+            strokeWidth: 1.7
+
+# profit / loss
+        - Area: {fn1: calcs.p, fn2: calcs.atc, fill: Blue, opacity: params.ops, min: 0, max: params.x, show: calcs.tr > calcs.tc }
+        - Area: {fn1: calcs.atc, fn2: calcs.p, fill: Red, opacity: params.ops, min: 0, max: params.x, show: calcs.tr < calcs.tc }
+
+# dropline x
+        - Segment:
+            a: [params.x,1000]
+            b: [params.x,calcs.cazz]
+            color: Black
+            lineStyle: dotted
+            strokeWidth: 1
+
+    sidebar:
+      controls:
+      - title: Costi dell'impresa
+        sliders:
+        - param: x
+          label: X
+        divs:
+        - html: "` Quando .. profitto massimo $ ${calcs.totalrevenue.toFixed(1)} - 
+                      ${calcs.totalcost.toFixed(1)} = ${calcs.totalrevenue.toFixed(1) - calcs.totalcost.toFixed(1)} $ `"
+          show: params.x == calcs.xopt

@@ -1,0 +1,132 @@
+
+schema: EconSchema
+params:
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: num, value: 500, min: 100, max: 1000, round: 50}
+- {name: p, value: 4, min: 1, max: 10}
+- {name: showCS, value: false}
+
+calcs:
+  d: (12-params.p)/4
+  D: (calcs.d*params.num)
+  cs: ( -(params.p) + 12 ) * (calcs.d)/2
+  cstot: ( -(params.p) + 12 ) * (calcs.d)/2
+
+aspectRatio: 1.84
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+    leftGraph:
+      xAxis:
+        ticks: 5
+        max: 3.5
+      yAxis:
+        max: 13
+        ticks: 10
+      objects:
+
+      - Label:
+              coordinates: [3.3, 0]
+              text: "` \\\\text{litri} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 13]
+              text: "` \\\\text{euro/litro}  `"
+              xPixelOffset: 0
+
+# individual demand
+      - Curve:
+          fn: 12-4*(x)
+          color: Blue
+          strokeWidth: 1.5
+
+# price line
+      - Line:
+          yIntercept: params.p
+          color: Green
+          label:
+            text: P
+            x: 10.5
+            position: bl
+          drag:
+            - vertical: p
+          strokeWidth: 1.5
+
+# optimum
+      - Point:
+          coordinates: [calcs.d, params.p]
+          droplines:
+            vertical: calcs.d.toFixed(1)
+          color: Blue
+
+# consumer surplus blue
+      - Area: {fn1: 12-4*(x), fn2: params.p, fill: Blue, opacity: params.ops, min: 0.001, max: calcs.d, show: params.showCS == true }
+
+    rightGraph:
+      xAxis:
+        max: 3000
+        ticks: 5
+      yAxis:
+        max: 13
+        ticks: 10
+      objects:
+
+      - Label:
+              coordinates: [3000, 0]
+              text: "` \\\\text{litri} `"
+              yPixelOffset: 0
+              position: l
+      - Label:
+              coordinates: [0, 13]
+              text: "` \\\\text{euro/litro}  `"
+              xPixelOffset: 0
+
+# market demand
+      - Curve:
+          fn: (12-4*(x)/(params.num))
+          color: Blue
+          strokeWidth: 1.5
+
+# price line
+      - Line:
+          yIntercept: params.p
+          color: budget
+          label:
+            text: P
+            x: 10500
+            position: bl
+          drag:
+            - vertical: p
+          strokeWidth: 1.5
+
+# optimum
+      - Point:
+          coordinates: [calcs.D, params.p]
+          droplines:
+            vertical: calcs.D.toFixed(1)
+          color: Blue
+
+# consumer surplus blue
+      - Area: {fn1: (12-4*(x)/(params.num)), fn2: params.p, fill: Blue, opacity: params.ops, min: 0.001, max: calcs.D, show: params.showCS == true }
+
+
+    sidebar:
+      controls:
+      - title: Domanda individuale e di mercato per un bene perfettamente divisibile
+        checkboxes:
+        - param: showCS
+          label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+        - param: p
+          label: P
+        - param: num
+          label: N
+        divs:
+        - html: "`Il surplus del singolo consumatore (area azzurra nel grafico di sinistra) è pari a
+                  $ ${calcs.cs} $.
+        Il surplus totale dei consumatori (area azzurra nel grafico di destra) è pari a
+                  $ ${params.num * calcs.cstot} $.`"
+          show: params.showCS == true

@@ -1,0 +1,52 @@
+<!doctype html>
+{% assign path = page.path | split: '/' %}
+{% assign language = path[0] %}
+{% assign textbook = site.data.toc %}
+{% assign parts = textbook.parts | where: "folder", path[1] %}
+{% assign part = parts[0] %}
+{% assign chapters = part.chapters | where: "folder", path[2] %}
+{% assign chapter = chapters[0] %}
+{% assign filename = path[3] | remove: '.md' %}
+{% assign sectionIndex = filename | minus: 1 %}
+{% if page.version %}
+{% assign version = page.version %}
+{% else %}
+{% assign version = "0.3.1" %}
+{% endif %}
+<html lang="en">
+<head>
+    <title>{{ chapter.title[language] }}</title>
+    {% include stylesheets.html KGversion=version bootstrap=false textbook=true %}
+</head>
+<body>
+    {% include header.html language=language %}
+<article>
+    {% if page.foreword %}
+    <div class="subtitle"><a href="{{ site.baseurl }}/{{ language }}">{{ textbook.title[language] }}</a></div>
+    <h1>{% if language == 'it' %}Prefazione{% else %}Preface{% endif %}</h1>
+    <hr/>
+    <section>
+        {{ content }}
+    </section>
+    {% else %}
+    <div class="subtitle">
+        {% if chapter.appendix %}
+        {% if language == "it" %}Appendice{% else %}Appendix{% endif %} {{ chapter.folder }}
+        {% else %}
+        {% if language == "it" %}Capitolo{% else %}Chapter{% endif %} {{ chapter.folder }}
+        {% endif %} / <a href="./">{{ chapter.title[language] }}</a>
+    </div>
+    <h1>{{ chapter.folder }}.{{ filename }} {{ chapter.sections[sectionIndex].title[language] }}</h1>
+    <hr/>
+    <section>
+        {{ content }}
+    </section>
+    {% include next-previous.html list=chapter.sections sectionIndex=sectionIndex previous=true type="textbook" language=language %}
+    {% endif %}
+</article>
+<div class="watermark">
+    Copyright (c) {{ textbook.author}}
+</div>
+</body>
+{% include scripts.html KGversion=version bootstrap=false renderMath=true %}
+</html>

@@ -1,0 +1,20 @@
+{% assign prevIndex = include.sectionIndex | minus: 1 %}
+
+{% if include.previous | default: true %}
+
+{% unless sectionIndex == 0 %}
+{% assign prev = include.list[prevIndex] %}
+<div class="subtitle">{% if language == "it" %}Precedente{% else %}Previous{% endif %}: <a href="{{ prevIndex | plus: 1 }}">{{ prev.title[language] }}</a></div>
+{% endunless %}
+
+{% endif %}
+
+{% assign nextIndex = include.sectionIndex | plus: 1 %}
+{% assign numSections = include.list.size %}
+
+{% if nextIndex == numSections %}
+<div class="subtitle">[ {% if language == "it" %}Fine del capitolo{% else %}End of chapter{% endif %} ]</div>
+{% else %}
+{% assign next = include.list[nextIndex] %}
+<div class="subtitle">{% if language == "it" %}Seguente{% else %}Next{% endif %}: <a href="{{ nextIndex | plus: 1 }}">{{ next.title[language] }}</a></div>
+{% endif %}

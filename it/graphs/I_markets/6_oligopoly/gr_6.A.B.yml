@@ -1,0 +1,124 @@
+
+schema: EconSchema
+params:
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: s, value: 0.5, min: -1, max: 1, round: 0.1}
+- {name: a, value: 18, min: 16, max: 20, round: 1}
+- {name: c, value: 1, min: 0, max: 3, round: 0.5}
+- {name: m, value: 10, min: 10, max: 20}
+
+calcs:
+  nash: params.m*(params.a-params.c)/(2+params.s)
+  monquantity: params.m*(params.a-params.c)/(2)
+
+#aspectRatio: 1
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        ticks: 5
+        max: 199
+      yAxis:
+        max: 199
+        ticks: 5
+      objects:
+
+      - Label:
+                coordinates: [199, 0]
+                text: "` X_1 `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+      - Label:
+                coordinates: [0, 199]
+                text: "` X_2  `"
+                xPixelOffset: -10
+
+# BR1
+      - Curve:
+          fn: (params.a-params.s*(y)/params.m-params.c)/(2/params.m)
+          ind: y
+          label:
+            text: BR_1
+            y: 21
+          color: Blue
+          strokeWidth: 1.5
+          show: params.s !== 0
+
+# BR2
+      - Curve:
+          fn: (params.a-params.s*(x)/params.m-params.c)/(2/params.m)
+          label:
+            text: BR_2
+            x: 22
+#            position: b
+          color: Red
+          strokeWidth: 1.5
+          show: params.s !== 0
+
+
+# equilibrium
+      - Point:
+          coordinates: [calcs.nash, calcs.nash]
+          droplines:
+            horizontal: calcs.nash.toFixed(1)
+            vertical: calcs.nash.toFixed(1)
+          color: Green
+
+# monopoly
+      - Point:
+          coordinates: [calcs.monquantity, calcs.monquantity]
+          droplines:
+            horizontal: calcs.monquantity.toFixed(1)
+            vertical: calcs.monquantity.toFixed(1)
+          color: Green
+          show: params.s == 0
+
+      - Line:
+          point: [calcs.monquantity,0]
+          point2: [calcs.monquantity,calcs.monquantity]
+          color: Blue
+          strokeWidth: 1.5
+          show: params.s == 0
+          label:
+            text: BR_1
+            y: 22
+
+      - Line:
+          point: [0,calcs.monquantity]
+          point2: [calcs.monquantity,calcs.monquantity]
+          color: Red
+          strokeWidth: 1.5
+          show: params.s == 0
+          label:
+            text: BR_2
+            x: 22
+
+    sidebar:
+      controls:
+      - title: Concorrenza sui prezzi - sostituti e complementi
+#        checkboxes:
+#        - param: showCS
+#          label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+        - param: s
+          label: \sigma
+        - param: a
+          label: a
+        - param: c
+          label: c
+        - param: m
+          label: M
+        divs:
+        - html: "` Poiché $\\\\gamma=${params.s.toFixed(1)}>0$, i due beni sono <strong>sostituti</strong>.
+                  Dato che  $\\\\alpha=${params.a.toFixed(0)}$, le funzioni di domanda 
+                  inversa nei due mercati sono
+                  $$ P_1 = ${params.a.toFixed(0)} - X_1 - ${params.s.toFixed(1)} X_2 $$
+                  $$ P_2 = ${params.a.toFixed(0)} - X_2 - ${params.s.toFixed(1)} X_1 $$
+                  Tenendo in considerazione che $c=${params.c}$, i prezzi di equilibrio sono 
+                  $$ P^*_1 = ${calcs.nash.toFixed(1)}  \\\\qquad P^*_2 = ${calcs.nash.toFixed(1)}  $$
+                  `"
+          show: params.s > 0

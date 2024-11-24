@@ -1,0 +1,130 @@
+
+schema: EconSchema
+params:
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: g, value: 0.5, min: 0, max: 0.99, round: 0.01}
+- {name: aa, value: 11, min: 8, max: 16, round: 1}
+- {name: m, value: 2, min: 0, max: 4, round: 1}
+
+calcs:
+  d: 1-params.g^2
+  a1: (params.aa-params.aa*params.g)/calcs.d
+  a2: (params.aa-params.aa*params.g)/calcs.d
+  b: 1/calcs.d
+  c: params.g/calcs.d
+  D: ( 4 * calcs.b * calcs.b - (calcs.c)^2 )
+  nash2: ( 2 * calcs.b * ( calcs.a2 + calcs.b * params.m ) + calcs.c * ( calcs.a1 + calcs.b * params.m ) ) / calcs.D
+  nash1: ( 2 * calcs.b * ( calcs.a1 + calcs.b * params.m ) + calcs.c * ( calcs.a2 + calcs.b * params.m ) ) / calcs.D
+  monprice1: ( calcs.a1 + params.m * calcs.b ) / ( 2 * calcs.b )
+  monprice2: ( calcs.a2 + params.m * calcs.b ) / ( 2 * calcs.b )
+
+
+#aspectRatio: 1
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        ticks: 5
+        max: 11.5
+        title: " $ P_1 $ " 
+      yAxis:
+        max: 11
+        ticks: 5
+        title: " $ P_2 $ "
+      objects:
+
+# BR1
+      - Curve:
+          fn: ( calcs.a1+calcs.b*params.m+calcs.c*(y) ) / ( 2 * calcs.b )
+          ind: y
+          label:
+            text: BR_1
+            y: 10.5
+          color: Blue
+          strokeWidth: 1.5
+          show: params.g !== 0
+
+# BR2
+      - Curve:
+          fn: ( calcs.a2+calcs.b*params.m+calcs.c*(x) ) / ( 2 * calcs.b )
+          label:
+            text: BR_2
+            x: 10.6
+#            position: b
+          color: Red
+          strokeWidth: 1.5
+          show: params.g !== 0
+
+# equilibrium
+      - Point:
+          coordinates: [calcs.nash1, calcs.nash2]
+          droplines:
+            horizontal: calcs.nash2.toFixed(2)
+            vertical: calcs.nash1.toFixed(2)
+          color: Green
+          show: params.g !== 0
+
+# monopoly
+      - Point:
+          coordinates: [calcs.monprice1, calcs.monprice2]
+          droplines:
+            horizontal: calcs.monprice2.toFixed(1)
+            vertical: calcs.monprice1.toFixed(1)
+          color: Green
+          show: params.g == 0
+
+      - Line:
+          point: [calcs.monprice1,0]
+          point2: [calcs.monprice1,calcs.monprice2]
+          color: Blue
+          strokeWidth: 1.5
+          show: params.g == 0
+          label:
+            text: BR_1
+            y: 10.6
+
+      - Line:
+          point: [0,calcs.monprice2]
+          point2: [calcs.monprice1,calcs.monprice2]
+          color: Red
+          strokeWidth: 1.5
+          show: params.g == 0
+          label:
+            text: BR_2
+            x: 10.8
+
+
+
+    sidebar:
+      controls:
+      - title: Concorrenza sui prezzi - beni sostituti nel caso simmetrico
+#        checkboxes:
+#        - param: showCS
+#          label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+        - param: g
+          label: \gamma
+        - param: aa
+          label: \alpha
+        - param: m
+          label: c
+        divs:
+        - html: "` Quando $\\\\alpha=${params.aa.toFixed(0)}$ e $\\\\gamma=${params.g.toFixed(2)}$, le funzioni di domanda inversa nei due mercati sono
+                  $$ P_1 = ${params.aa.toFixed(0)} - X_1 - ${params.g.toFixed(2)} X_2 $$
+                  $$ P_2 = ${params.aa.toFixed(0)} - X_2 - ${params.g.toFixed(2)} X_1 $$
+                  Dato che $c_1=c_2=c=${params.m}$, i prezzi di equilibrio sono 
+                  $$ P^*_1 = ${calcs.nash1.toFixed(2)}  \\\\qquad P^*_2 = ${calcs.nash2.toFixed(2)}  $$
+                  `"
+          show: params.g !== 0 && params.g !== 1
+        - html: "` Quando $\\\\alpha=${params.aa.toFixed(0)}$ e $\\\\gamma=0$, le funzioni di domanda inversa nei due mercati sono
+                  $$ P_1 = ${params.aa} - X_1  \\\\qquad P_2 = ${params.aa} - X_2  $$
+                  Dato che $\\\\gamma=0$, i due beni sono <strong>indipendenti</strong>. La risposta ottima di ciascuna impresa è quindi
+                  scegliere il prezzo di monopolio nel proprio mercato, indipendentemente dal prezzo
+                  scelto dall'impresa operante nell'altro mercato: 
+                  $$ P^*_1 = P^M_1 = ${calcs.monprice1}  \\\\qquad P^*_2 = P^M_2 = ${calcs.monprice2}  $$
+                  `"
+          show: params.g == 0
+

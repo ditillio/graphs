@@ -1,0 +1,11 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="Alfredo Di Tillio">
+{% if include.bootstrap %}
+<link href="{{ site.baseurl }}/static/css/kg-bootstrap.css" rel="stylesheet">
+{% endif %}
+<link href="{{ site.baseurl }}/static/css/kg-tufte.{{ include.KGversion | default: '0.2.7' }}.css" rel="stylesheet">
+{% if include.textbook %}
+<link href="{{ site.baseurl }}/static/css/textbook.css" rel="stylesheet" type="text/css">
+{% endif %}

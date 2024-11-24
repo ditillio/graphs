@@ -1,0 +1,190 @@
+schema: EconSchema
+params:
+- {name: p, value: 30, min: 5, max: 50, round: 5}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: opss, value: 0.3}
+- {name: opps, value: 0.5}
+- {name: numa, value: 70, min: 40, max: 100, round: 10}
+- {name: numb, value: 70, min: 40, max: 100, round: 10}
+- {name: c, value: 10}
+- {name: d, value: 10}
+- {name: mc1b, value: 10}
+- {name: mc2b, value: 20}
+- {name: mc3b, value: 30}
+- {name: mc4b, value: 40}
+
+calcs:
+  tc1: params.c * 1 + ( params.d / 2) * 1^2
+  tc2: params.c * 2 + ( params.d / 2) * 2^2
+  tc3: params.c * 3 + ( params.d / 2) * 3^2
+  tc4: params.c * 4 + ( params.d / 2) * 4^2
+  tc5: params.c * 5 + ( params.d / 2) * 5^2
+  mc1: calcs.tc1
+  mc2: calcs.tc2 - calcs.tc1
+  mc3: calcs.tc3 - calcs.tc2
+  mc4: calcs.tc4 - calcs.tc3
+  ps: max((params.p)-(calcs.mc1),0)+max((params.p)-(calcs.mc2),0)+max((params.p)-(calcs.mc3),0)+max((params.p)-(calcs.mc4),0)
+  psb: max((params.p)-(params.mc1b),0)+max((params.p)-(params.mc2b),0)+max((params.p)-(params.mc3b),0)+max((params.p)-(params.mc4b),0)
+
+layout:
+  ThreeHorizontalGraphs:
+    leftGraph:
+      xAxis:
+        max: 4.9
+        ticks: 4
+      yAxis:
+        max: 52
+        ticks: 5
+      objects:
+      - Label:
+              coordinates: [4.9, 0]
+              text: "` \\\\text{unità} `"
+              yPixelOffset: 0
+              xPixelOffset: -5
+              position: m
+      - Label:
+              coordinates: [0, 550]
+              text: "` \\\\text{euro/unità}  `"
+              xPixelOffset: 0
+      - Line:
+          yIntercept: params.p
+          color: Green
+          strokeWidth: 1.5
+          label:
+            text: P
+            x: 5.5
+            position: b
+          drag:
+            - vertical: p
+      - Point: {coordinates: [1,calcs.mc1], r: 4, color: Red, droplines: {horizontal: calcs.mc1, vertical: }}
+      - Point: {coordinates: [2,calcs.mc2], r: 4, color: Red, droplines: {horizontal: calcs.mc2, vertical: }}
+      - Point: {coordinates: [3,calcs.mc3], r: 4, color: Red, droplines: {horizontal: calcs.mc3, vertical: }}
+      - Point: {coordinates: [4,calcs.mc4], r: 4, color: Red, droplines: {horizontal: calcs.mc4, vertical: }}
+      - Area: {fn1: params.p, fn2: calcs.mc1, fill: GreenYellow, opacity: params.opps, min: 0, max: 1, show: params.p > calcs.mc1 }
+      - Area: {fn1: params.p, fn2: calcs.mc2, fill: GreenYellow, opacity: params.opps, min: 1, max: 2, show: params.p > calcs.mc2 }
+      - Area: {fn1: params.p, fn2: calcs.mc3, fill: GreenYellow, opacity: params.opps, min: 2, max: 3, show: params.p > calcs.mc3 }
+      - Area: {fn1: params.p, fn2: calcs.mc4, fill: GreenYellow, opacity: params.opps, min: 3, max: 4, show: params.p > calcs.mc4 }
+
+
+    leftControls:
+      title: Domanda individuale gruppo A
+      sliders:
+        - param: p
+          label: P
+        - param: numb
+          label: N_A
+
+    middleGraph:
+      xAxis:
+        max: 4.9
+        ticks: 4
+      yAxis:
+        max: 52
+        ticks: 5
+      objects:
+      - Label:
+              coordinates: [4.9, 0]
+              text: "` \\\\text{unità} `"
+              yPixelOffset: 0
+              xPixelOffset: -5
+              position: m
+      - Label:
+              coordinates: [0, 550]
+              text: "` \\\\text{euro/unità}  `"
+              xPixelOffset: 0
+      - Line:
+          yIntercept: params.p
+          color: Green
+          strokeWidth: 1.5
+          label:
+            text: P
+            x: 5.5
+            position: b
+          drag:
+            - vertical: p
+      - Point: {coordinates: [1,params.mc1b], r: 4, color: Red, droplines: {horizontal: params.mc1b, vertical: }}
+      - Point: {coordinates: [2,params.mc2b], r: 4, color: Red, droplines: {horizontal: params.mc2b, vertical: }}
+      - Point: {coordinates: [3,params.mc3b], r: 4, color: Red, droplines: {horizontal: params.mc3b, vertical: }}
+      - Point: {coordinates: [4,params.mc4b], r: 4, color: Red, droplines: {horizontal: params.mc4b, vertical: }}
+      - Area: {fn1: params.p, fn2: params.mc1b, fill: GreenYellow, opacity: params.opps, min: 0, max: 1, show: params.p > params.mc1b }
+      - Area: {fn1: params.p, fn2: params.mc2b, fill: GreenYellow, opacity: params.opps, min: 1, max: 2, show: params.p > params.mc2b }
+      - Area: {fn1: params.p, fn2: params.mc3b, fill: GreenYellow, opacity: params.opps, min: 2, max: 3, show: params.p > params.mc3b }
+      - Area: {fn1: params.p, fn2: params.mc4b, fill: GreenYellow, opacity: params.opps, min: 3, max: 4, show: params.p > params.mc4b }
+
+    middleControls:
+      title: Domanda individuale gruppo B
+      sliders:
+        - param: p
+          label: P
+        - param: numa
+          label: N_B
+
+    rightGraph:
+      xAxis:
+        max: 900
+        ticks: 4
+      yAxis:
+        max: 52
+        ticks: 5
+
+      objects:
+      - Label:
+              coordinates: [900, 0]
+              text: "` \\\\text{unità} `"
+              yPixelOffset: 0
+              xPixelOffset: -5
+              position: m
+      - Label:
+              coordinates: [0, 550]
+              text: "` \\\\text{euro/unità}  `"
+              xPixelOffset: 0
+      - Line:
+          yIntercept: params.p
+          color: Green
+          strokeWidth: 1.5
+          label:
+            text: P
+            x: 880
+            position: b
+          drag:
+            - vertical: p
+      - Point: {coordinates: [params.numb,params.mc1b], r: 4, color: Red, droplines: {horizontal: params.mc1b, vertical: }}
+      - Point: {coordinates: [params.numa+params.numb,calcs.mc1], r: 4, color: Red, droplines: {horizontal: calcs.mc1, vertical: }}
+      - Point: {coordinates: [params.numa+2*params.numb,params.mc2b], r: 4, color: Red, droplines: {horizontal: params.mc2b, vertical: }}
+      - Point: {coordinates: [(2*params.numa)+(2*params.numb),calcs.mc2], r: 4, color: Red, droplines: {horizontal: calcs.mc2, vertical: }}
+      - Point: {coordinates: [(2*params.numa)+(3*params.numb),params.mc3b], r: 4, color: Red, droplines: {horizontal: params.mc3b, vertical: }}
+      - Point: {coordinates: [(3*params.numa)+(3*params.numb),calcs.mc3], r: 4, color: Red, droplines: {horizontal: calcs.mc3, vertical: }}
+      - Point: {coordinates: [(3*params.numa)+(4*params.numb),params.mc4b], r: 4, color: Red, droplines: {horizontal: params.mc4b, vertical: }}
+      - Point: {coordinates: [(4*params.numa)+(4*params.numb),calcs.mc4], r: 4, color: Red, droplines: {horizontal: calcs.mc4, vertical: }}
+
+
+
+# producer surplus
+      - Area: {fn1: params.p, fn2: params.mc1b, fill: GreenYellow, opacity: params.opps, min: 0, max: params.numb, show: params.p > params.mc1b }
+      - Area: {fn1: params.p, fn2: calcs.mc1, fill: GreenYellow, opacity: params.opps, min: params.numb, max: params.numa+params.numb, show: params.p > calcs.mc1 }
+      - Area: {fn1: params.p, fn2: params.mc2b, fill: GreenYellow, opacity: params.opps, min: params.numa+params.numb, max: (params.numa)+(2*params.numb), show: params.p > params.mc2b }
+      - Area: {fn1: params.p, fn2: calcs.mc2, fill: GreenYellow, opacity: params.opps, min: (params.numa)+(2*params.numb), max: (2*params.numa)+(2*params.numb), show: params.p > calcs.mc2 }
+      - Area: {fn1: params.p, fn2: params.mc3b, fill: GreenYellow, opacity: params.opps, min: (2*params.numa)+(2*params.numb), max: (2*params.numa)+(3*params.numb), show: params.p > params.mc3b }
+      - Area: {fn1: params.p, fn2: calcs.mc3, fill: GreenYellow, opacity: params.opps, min: (2*params.numa)+(3*params.numb), max: (3*params.numa)+(3*params.numb), show: params.p > calcs.mc3 }
+      - Area: {fn1: params.p, fn2: params.mc4b, fill: GreenYellow, opacity: params.opps, min: (3*params.numa)+(3*params.numb), max: (3*params.numa)+(4*params.numb), show: params.p > params.mc4b }
+      - Area: {fn1: params.p, fn2: calcs.mc4, fill: GreenYellow, opacity: params.opps, min: (3*params.numa)+(4*params.numb), max: (4*params.numa)+(4*params.numb), show: params.p > calcs.mc4 }
+
+    rightControls:
+      title: Domanda di mercato
+      sliders:
+        - param: p
+          label: P
+
+    explanation:
+      divs:
+        - html: "` Quando $ P=${params.p} $ il surplus di ciascuna impresa del gruppo A è pari a ${calcs.ps} 
+                (area rossa nel grafico di sinistra), 
+                quindi $N_A \\\\times ${calcs.ps} = ${params.numa*calcs.ps}$ per l'intero gruppo. 
+                Analogamente, il surplus di ciascuna impresa del gruppo B è pari a ${calcs.psb}
+                (area rossa nel grafico di mezzo), 
+                quindi $N_B \\\\times ${calcs.psb} = ${params.numb*calcs.psb}$ per l'intero gruppo. 
+                 Il surplus totale dei produttori (area rossa nel grafico di destra) è dunque pari a 
+                 $ N_A \\\\times ${calcs.ps} + N_B \\\\times ${calcs.psb} = ${params.numa*calcs.ps+params.numb*calcs.psb} $. `"
+

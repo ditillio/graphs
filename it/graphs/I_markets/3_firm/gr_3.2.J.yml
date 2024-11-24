@@ -1,0 +1,70 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: alpha, value: 100, min: 20, max: 280}
+- {name: l, value: 4, min: 0, max: 6, round: 0.1}
+
+calcs:
+  x: ((params.l)*(params.alpha))^(1/2)
+
+#aspectRatio: 0.7
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 6
+        ticks: 5
+      yAxis:
+        max: 40
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [6, 0]
+                text: "` \\\\text{ore lavoro} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 40]
+                text: "` \\\\text{output}  `"
+                xPixelOffset: -6
+
+# points
+        - Point:
+            coordinates: [params.l, calcs.x]
+            droplines: {vertical: params.l.toFixed(1), horizontal: calcs.x.toFixed(1)}
+            color: Blue
+            r: 4
+            drag:
+            - horizontal: l
+
+# production function
+
+        - Curve:
+            fn: ((x)*(params.alpha))^(1/2)
+            color: Blue
+            label:
+              text: X
+              x: 6
+              position: l
+            strokeWidth: 1.7
+
+    sidebar:
+      controls:
+      - title: Funzione di produzione dell'impresa
+        sliders:
+        - param: l
+          label: L
+        - param: alpha
+          label: \alpha
+        divs:
+        - html: "` I parametri $\\\\alpha$ e $\\\\beta$ sono indici della produttività del lavoro.
+                Aumentando $\\\\alpha$ o $\\\\beta$ (o entrambi), la quantità di output ($X$) a 
+                parità di lavoro impiegato ($L$). `"
+          show: params.alpha > 0

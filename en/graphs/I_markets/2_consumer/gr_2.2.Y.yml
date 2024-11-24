@@ -1,0 +1,185 @@
+
+schema: EconSchema
+params:
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: p1, value: 5, min: 2, max: 8}
+- {name: p2, value: 14, min: 10, max: 18}
+- {name: g, value: 0, min: -0.2, max: 0.2, round: 0.1}
+- {name: aa1, value: 10, min: 8, max: 12}
+- {name: aa2, value: 20, min: 8, max: 12}
+
+calcs:
+  d: 1-params.g^2
+  x1opt: ( params.aa1 - params.g * params.aa2 - params.p1 + params.g * params.p2 ) / calcs.d
+  x2opt: ( params.aa2 - params.g * params.aa1 - params.p2 + params.g * params.p1 ) / calcs.d
+
+#aspectRatio: 3
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+    leftGraph:
+      xAxis:
+        ticks: 5
+        max: 15
+      yAxis:
+        max: 15
+        ticks: 5
+      objects:
+
+      - Label:
+            coordinates: [15, 0]
+            text: "` \\\\text{L} `"
+            yPixelOffset: 0
+            position: l
+      - Label:
+            coordinates: [0, 14.5]
+            text: "` \\\\text{eur/L}  `"
+            xPixelOffset: 0
+
+# individual demand good 1
+      - Curve:
+          fn: ( params.aa1 - params.g * params.aa2 - (y) + params.g * params.p2 ) / calcs.d
+          ind: y
+          color: Blue
+          strokeWidth: 1.5
+
+# price line
+      - Line:
+          yIntercept: params.p1
+          color: Green
+          label:
+            text: P_1
+            x: 15
+#            position: bl
+          drag:
+            - vertical: p1
+          strokeWidth: 1.5
+
+# optimum
+      - Point:
+          coordinates: [calcs.x1opt, params.p1]
+          droplines:
+            vertical: calcs.x1opt.toFixed(1)
+          color: Blue
+
+    rightGraph:
+      xAxis:
+        ticks: 5
+        max: 25
+      yAxis:
+        max: 25
+        ticks: 5
+      objects:
+
+# good 2 = apples (independent)
+      - Label:
+            coordinates: [25, 0]
+            text: "` \\\\text{kg} `"
+            yPixelOffset: 0
+            position: l
+            show: params.g == 0
+      - Label:
+            coordinates: [0, 25]
+            text: "` \\\\text{eur/kg}  `"
+            xPixelOffset: 0
+            show: params.g == 0
+
+# good 2 = hours car sharing (complement)
+      - Label:
+            coordinates: [25, 0]
+            text: "` \\\\text{min} `"
+            yPixelOffset: 0
+            position: l
+            show: params.g < 0
+      - Label:
+            coordinates: [0, 25]
+            text: "` \\\\text{eur/min}  `"
+            xPixelOffset: 0
+            show: params.g < 0
+
+# good 2 = km taxi (substitute)
+      - Label:
+            coordinates: [25, 0]
+            text: "` \\\\text{km} `"
+            yPixelOffset: 0
+            position: l
+            show: params.g > 0
+      - Label:
+            coordinates: [0, 25]
+            text: "` \\\\text{eur/km}  `"
+            xPixelOffset: 0
+            show: params.g > 0
+
+# individual demand good 2
+      - Curve:
+          fn: ( params.aa2 - params.g * params.aa1 - (y) + params.g * params.p1 ) / calcs.d
+          ind: y
+          color: Blue
+          strokeWidth: 1.5
+
+# price line
+      - Line:
+          yIntercept: params.p2
+          color: Green
+          label:
+            text: P_2
+            x: 25
+#            position: bl
+          drag:
+            - vertical: p2
+          strokeWidth: 1.5
+
+# optimum
+      - Point:
+          coordinates: [calcs.x2opt, params.p2]
+          droplines:
+            vertical: calcs.x2opt.toFixed(1)
+          color: Blue
+
+    sidebar:
+      controls:
+      - title: Domanda lineare - sostituti e complementi
+#        checkboxes:
+#        - param: showCS
+#          label: "\\text{Mostra e calcola surplus dei consumatori.}"
+        sliders:
+#        - param: aa1
+#          label: \alpha_1
+#        - param: aa2
+#          label: \alpha_2
+        - param: g
+          label: \sigma
+        - param: p1
+          label: P_1
+        - param: p2
+          label: P_2
+#        divs:
+#          - html: "` Dato che $\\\\sigma=${params.g.toFixed(1)}>0$, i due beni sono <strong>sostituti</strong>. 
+#                  All'aumentare del prezzo di uno dei due beni, la curva di domanda per l'altro bene si sposta 
+#                  a destra. 
+#            `"
+#            show: params.g > 0
+
+    explanation:
+        divs:
+          - html: "`  `"
+          - html: "`  `"
+          - html: "`  `"
+          - html: "`  `"
+          - html: "` Dato che $\\\\sigma=0$, i due beni sono <strong>indipendenti</strong>. 
+                  Al variare del prezzo di uno dei due beni, la curva di domanda per l'altro bene non si sposta. 
+            `"
+            show: params.g == 0
+          - html: "` Dato che $\\\\sigma=${params.g.toFixed(1)}>0$, i due beni sono <strong>sostituti</strong>. 
+                  All'aumentare del prezzo di uno dei due beni, la curva di domanda per l'altro bene si sposta 
+                  a destra. 
+            `"
+            show: params.g > 0
+          - html: "` Dato che $\\\\sigma=${params.g.toFixed(1)}<0$, i due beni sono <strong>complementi</strong>. 
+                  All'aumentare del prezzo di uno dei due beni, la curva di domanda per l'altro bene si sposta 
+                  a sinistra. 
+            `"
+            show: params.g < 0
+ 

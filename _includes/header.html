@@ -1,0 +1,7 @@
+<div class="subtitle" style="float:right; padding-right: 20px">
+	{% if include.language == "it" %}
+	IT | <a href="{{ site.baseurl }}/{{ page.path | replace: 'it','en' | remove: '.md' }}">EN</a>
+	{% else %}
+	<a href="{{ site.baseurl }}/{{ page.path | replace: 'en','it' | remove: '.md' }}">IT</a> | EN
+	{% endif %}
+</div>

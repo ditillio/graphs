@@ -1,0 +1,269 @@
+params:
+- {name: showCS, value: false}
+- {name: d, value: 0}
+- {name: p, value: 4, min: 0, max: 12}
+- {name: m, value: 100}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+
+- {name: b11, value: 1}
+- {name: b12, value: 3}
+- {name: b21, value: 5}
+- {name: b22, value: 7}
+- {name: b31, value: 9}
+- {name: b32, value: 11}
+
+
+calcs:
+  b1: ((params.b11)+(params.b12))/2
+  b2: ((params.b21)+(params.b22))/2
+  b3: ((params.b31)+(params.b32))/2
+  t11: (params.b11)/2
+  t12: (params.b11+params.b12)/2
+  t21: (params.b11+params.b12+params.b21)/2
+  t22: (params.b11+params.b12+params.b21+params.b22)/2
+  t31: (params.b11+params.b12+params.b21+params.b22+params.b31)/2
+  t32: (params.b11+params.b12+params.b21+params.b22+params.b31+params.b32)/2
+  t1: calcs.b1
+  t2: calcs.t1+calcs.b2
+  t3: calcs.t2+calcs.b3
+  cs0: max((calcs.b1)-(params.p),0)+max((calcs.b2)-(params.p),0)+max((calcs.b3)-(params.p),0)
+  cs1: (max((params.b11)-(params.p),0)+max((params.b12)-(params.p),0)+max((params.b21)-(params.p),0)
+        +max((params.b22)-(params.p),0)+max((params.b31)-(params.p),0)+max((params.b32)-(params.p),0))/2
+  dem: (12-params.p)/4
+  cs2: ( -(params.p) + 12 ) * (calcs.dem)/2
+
+
+aspectRatio: 1
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 3.3
+        ticks: 5
+      yAxis:
+        max: 20
+        ticks: 5
+
+      objects:
+
+        - Label:
+              coordinates: [3.3, 0]
+              text: "` \\\\text{litri} `"
+              yPixelOffset: 0
+              position: l
+        - Label:
+              coordinates: [0, 20]
+              text: "` \\\\text{euro}  `"
+              xPixelOffset: -5
+
+# price line
+        - Line:
+            slope: params.p
+            color: Green
+            strokeWidth: 1.5
+            drag:
+              - vertical: p
+
+        - Point: {coordinates: [0.05,0], color: Green, show: params.d !== 2}
+        - Point: {coordinates: [1, (params.p)], color: Green, droplines: {horizontal: (params.p), vertical: }, show: params.d !== 2}
+        - Point: {coordinates: [2, (2*params.p)], color: Green, droplines: {horizontal: (2*params.p), vertical: }, show: params.d !== 2}
+        - Point: {coordinates: [3, (3*params.p)], color: Green, droplines: {horizontal: (3*params.p), vertical: }, show: params.d !== 2}
+        - Point: {coordinates: [0.5, (0.5*params.p)], color: Green, droplines: {horizontal: (0.5*params.p), vertical: }, show: params.d == 1}
+        - Point: {coordinates: [1.5, (1.5*params.p)], color: Green, droplines: {horizontal: (1.5*params.p), vertical: }, show: params.d == 1}
+        - Point: {coordinates: [2.5, (2.5*params.p)], color: Green, droplines: {horizontal: (2.5*params.p), vertical: }, show: params.d == 1}
+
+
+# consumer surplus
+        - Segment: {a: [1,calcs.b1], b: [1,(params.p)], color: Blue, show: params.p < calcs.b1 && params.p > calcs.b2 && params.d == 0 && params.showCS == 1, strokeWidth: 5}
+        - Segment: {a: [2,calcs.b1+calcs.b2], b: [2,(2*params.p)], color: Blue, show: params.p <= calcs.b2 && params.p > calcs.b3 && params.d == 0 && params.showCS == 1, strokeWidth: 5}
+        - Segment: {a: [3,calcs.b1+calcs.b2+calcs.b3], b: [3,(3*params.p)], color: Blue, show: params.p <= calcs.b3 && params.d == 0 && params.showCS == 1, strokeWidth: 5}
+
+        - Segment: {a: [0.5,calcs.t11], b: [0.5,(0.5*params.p)], color: Blue, show: params.p <= params.b11 && params.p > params.b12 && params.d == 1 && params.showCS == 1, strokeWidth: 5}
+        - Segment: {a: [1,calcs.t12], b: [1,params.p], color: Blue, show: params.p <= params.b12 && params.p > params.b21 && params.d == 1 && params.showCS == 1, strokeWidth: 5}
+        - Segment: {a: [1.5,calcs.t21], b: [1.5,(1.5*params.p)], color: Blue, show: params.p <= params.b21 && params.p > params.b22 && params.d == 1 && params.showCS == 1, strokeWidth: 5}
+        - Segment: {a: [2,calcs.t22], b: [2,(2*params.p)], color: Blue, show: params.p <= params.b22 && params.p > params.b31 && params.d == 1 && params.showCS == 1, strokeWidth: 5}
+        - Segment: {a: [2.5,calcs.t31], b: [2.5,(2.5*params.p)], color: Blue, show: params.p <= params.b31 && params.p > params.b32 && params.d == 1 && params.showCS == 1, strokeWidth: 5}
+        - Segment: {a: [3,calcs.t32], b: [3,(3*params.p)], color: Blue, show: params.p <= params.b32 && params.d == 1 && params.showCS == 1, strokeWidth: 5}
+
+
+# total WTP for whole units
+        - Point: {coordinates: [0,0], color: Blue, show: params.d !== 2}
+        - Point: {coordinates: [1,calcs.b1], color: Blue, droplines: {horizontal: calcs.b1, vertical: }, show: params.d !== 2}
+        - Point: {coordinates: [2,calcs.b1+calcs.b2], color: Blue, droplines: {horizontal: calcs.b1+calcs.b2, vertical: }, show: params.d !== 2}
+        - Point: {coordinates: [3,calcs.b1+calcs.b2+calcs.b3], color: Blue, droplines: {horizontal: calcs.b1+calcs.b2+calcs.b3, vertical: }, show: params.d !== 2}
+
+# total WTP for half units
+        - Point: {coordinates: [0,0], color: Blue, show: params.d !== 2}
+        - Point: {coordinates: [0.5,calcs.t11], color: Blue, droplines: {horizontal: calcs.t11, vertical: }, show: params.d == 1}
+        - Point: {coordinates: [1.5,calcs.t21], color: Blue, droplines: {horizontal: calcs.t21, vertical: }, show: params.d == 1}
+        - Point: {coordinates: [2.5,calcs.t31], color: Blue, droplines: {horizontal: calcs.t31, vertical: }, show: params.d == 1}
+
+
+# WTP and CS in infinitely divisible case
+        - Curve:
+            fn: 2 * (x)^2
+            color: Blue
+            strokeWidth: 1.5
+            max: 3
+            show: params.d == 2
+
+        - Point: {coordinates: [calcs.dem,(12*(calcs.dem))-2*(calcs.dem)^2], color: Blue, droplines: {horizontal: (12*(calcs.dem))-2*(calcs.dem)^2, vertical: calcs.dem}, show: params.d == 2}
+        - Point: {coordinates: [calcs.dem,(params.p*calcs.dem)], color: Green, droplines: {horizontal: (params.p*calcs.dem)}, show: params.d == 2}
+
+        - Segment: {a: [calcs.dem,(12*(calcs.dem))-2*(calcs.dem)^2], b: [calcs.dem,(params.p*calcs.dem)], color: Blue, show: params.d == 2 && params.showCS == 1, strokeWidth: 5}
+
+# tangent
+        - Line:
+            point: [calcs.dem,(12*(calcs.dem))-2*(calcs.dem)^2]
+            slope: params.p
+            color: Black
+            min: calcs.dem-1
+            max: calcs.dem+1
+            strokeWidth: 1
+            show: params.d == 2
+
+
+
+
+
+
+
+
+    bottomGraph: 
+      xAxis:
+        max: 3.3
+        ticks: 5
+      yAxis:
+        max: 13
+        ticks: 5
+
+      objects:
+
+        - Label:
+              coordinates: [3.3, 0]
+              text: "` \\\\text{litri} `"
+              yPixelOffset: 0
+              position: l
+        - Label:
+              coordinates: [0, 13]
+              text: "` \\\\text{euro/litro}  `"
+              xPixelOffset: 0
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P
+              x: 3.1
+              position: b
+            drag:
+              - vertical: p
+
+# WTP and CS for whole units
+        - Point: {coordinates: [1,calcs.b1], color: Blue, droplines: {horizontal: calcs.b1, vertical: }, show: params.d == 0}
+        - Point: {coordinates: [2,calcs.b2], color: Blue, droplines: {horizontal: calcs.b2, vertical: }, show: params.d == 0}
+        - Point: {coordinates: [3,calcs.b3], color: Blue, droplines: {horizontal: calcs.b3, vertical: }, show: params.d == 0}
+        - Area: {fn1: calcs.b1, fn2: params.p, fill: Blue, opacity: params.ops, min: 0, max: 1, show: params.p < calcs.b1 && params.d == 0 && params.showCS == true}
+        - Area: {fn1: calcs.b2, fn2: params.p, fill: Blue, opacity: params.ops, min: 1, max: 2, show: params.p < calcs.b2 && params.d == 0 && params.showCS == true}
+        - Area: {fn1: calcs.b3, fn2: params.p, fill: Blue, opacity: params.ops, min: 2, max: 3, show: params.p < calcs.b3 && params.d == 0 && params.showCS == true}
+
+        - Point: {coordinates: [1,calcs.b1], color: Blue, show: params.d == 1, opacity: params.op1}
+        - Segment: {a: [0,calcs.b1], b: [1,calcs.b1], lineStyle: dotted, color: Blue, show: params.d == 1, strokeWidth: 0.2}
+        - Segment: {a: [1,calcs.b1], b: [1,0], lineStyle: dotted, color: Blue, show: params.d == 1, strokeWidth: 0.2}
+        - Point: {coordinates: [2,calcs.b2], color: Blue, show: params.d == 1, opacity: params.op1}
+        - Segment: {a: [0,calcs.b2], b: [2,calcs.b2], lineStyle: dotted, color: Blue, show: params.d == 1, strokeWidth: 0.2}
+        - Segment: {a: [2,calcs.b2], b: [2,0], lineStyle: dotted, color: Blue, show: params.d == 1, strokeWidth: 0.2}
+        - Point: {coordinates: [3,calcs.b3], color: Blue, show: params.d == 1, opacity: params.op1}
+        - Segment: {a: [0,calcs.b3], b: [3,calcs.b3], lineStyle: dotted, color: Blue, show: params.d == 1, strokeWidth: 0.2}
+        - Segment: {a: [3,calcs.b3], b: [3,0], lineStyle: dotted, color: Blue, show: params.d == 1, strokeWidth: 0.2}
+
+
+
+# WTP and CS for half units
+        - Point: {coordinates: [0.5,params.b11], color: Blue, droplines: {horizontal: params.b11, vertical: }, show: params.d == 1}
+        - Point: {coordinates: [1,params.b12], color: Blue, droplines: {horizontal: params.b12, vertical: }, show: params.d == 1}
+        - Point: {coordinates: [1.5,params.b21], color: Blue, droplines: {horizontal: params.b21, vertical: }, show: params.d == 1}
+        - Point: {coordinates: [2,params.b22], color: Blue, droplines: {horizontal: params.b22, vertical: }, show: params.d == 1}
+        - Point: {coordinates: [2.5,params.b31], color: Blue, droplines: {horizontal: params.b31, vertical: }, show: params.d == 1}
+        - Point: {coordinates: [3,params.b32], color: Blue, droplines: {horizontal: params.b32, vertical: }, show: params.d == 1}
+        - Area: {fn1: params.b11, fn2: params.p, fill: Blue, opacity: params.ops, min: 0, max: 0.5, show: params.p < params.b11 && params.d == 1 && params.showCS == true}
+        - Area: {fn1: params.b12, fn2: params.p, fill: Blue, opacity: params.ops, min: 0.5, max: 1, show: params.p < params.b12 && params.d == 1 && params.showCS == true}
+        - Area: {fn1: params.b21, fn2: params.p, fill: Blue, opacity: params.ops, min: 1, max: 1.5, show: params.p < params.b21 && params.d == 1 && params.showCS == true}
+        - Area: {fn1: params.b22, fn2: params.p, fill: Blue, opacity: params.ops, min: 1.5, max: 2, show: params.p < params.b22 && params.d == 1 && params.showCS == true}
+        - Area: {fn1: params.b31, fn2: params.p, fill: Blue, opacity: params.ops, min: 2, max: 2.5, show: params.p < params.b31 && params.d == 1 && params.showCS == true}
+        - Area: {fn1: params.b32, fn2: params.p, fill: Blue, opacity: params.ops, min: 2.5, max: 3, show: params.p < params.b32 && params.d == 1 && params.showCS == true}
+
+        - Point: {coordinates: [0.5,params.b11], color: Blue, show: params.d == 2, opacity: params.op1}
+        - Segment: {a: [0,params.b11], b: [0.5,params.b11], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Segment: {a: [0.5,params.b11], b: [0.5,0], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Point: {coordinates: [1,params.b12], color: Blue, show: params.d == 2, opacity: params.op1}
+        - Segment: {a: [0,params.b12], b: [1,params.b12], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Segment: {a: [1,params.b12], b: [1,0], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Point: {coordinates: [1.5,params.b21], color: Blue, show: params.d == 2, opacity: params.op1}
+        - Segment: {a: [0,params.b21], b: [1.5,params.b21], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Segment: {a: [1.5,params.b21], b: [1.5,0], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Point: {coordinates: [2,params.b22], color: Blue, show: params.d == 2, opacity: params.op1}
+        - Segment: {a: [0,params.b22], b: [2,params.b22], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Segment: {a: [2,params.b22], b: [2,0], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Point: {coordinates: [2.5,params.b31], color: Blue, show: params.d == 2, opacity: params.op1}
+        - Segment: {a: [0,params.b31], b: [2.5,params.b31], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Segment: {a: [2.5,params.b31], b: [2.5,0], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Point: {coordinates: [3,params.b32], color: Blue, show: params.d == 2, opacity: params.op1}
+        - Segment: {a: [0,params.b32], b: [3,params.b32], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+        - Segment: {a: [3,params.b32], b: [3,0], lineStyle: dotted, color: Blue, show: params.d == 2, strokeWidth: 0.2}
+
+
+
+
+# WTP and CS in infinitely divisible case
+        - Curve:
+            fn: 12-4*(x)
+            color: Blue
+            strokeWidth: 1.5
+            show: params.d == 2
+        - Area: {fn1: 12-4*(x), fn2: params.p, fill: Blue, opacity: params.ops, min: 0, 
+                        max: calcs.dem, show: params.d == 2 && params.showCS == true}
+
+        - Point: {coordinates: [calcs.dem,params.p], color: Blue, droplines: {vertical: calcs.dem}, show: params.d == 2}
+
+
+
+    sidebar:
+      controls:
+      - title: Divisibilità dei beni
+        sliders:
+        - param: p
+          label: P
+        radioGroup:
+          param: d
+          options:
+            - Bene venduto in multipli di $1$
+            - Bene venduto in multipli di $0.5$
+            - Bene perfettamente divisibile
+        checkboxes:
+        - param: showCS
+          label: "\\text{Mostra e calcola il surplus del consumatore}"
+        divs:
+        - html: "`  `"
+        - html: "`  `"
+        - html: "`  `"
+        - html: "`Il surplus del consumatore (area azzurra nel grafico di sotto, o lunghezza del segmento blu nel grafico di sopra) è pari a
+                  $$ ${calcs.cs0.toFixed(1)} $$`"
+          show: (params.d == 0 && params.showCS == true)
+        - html: "`Il surplus del consumatore (area azzurra nel grafico di sotto, o lunghezza del segmento blu nel grafico di sopra) è pari a
+                  $$ ${calcs.cs1.toFixed(1)} $$`"
+          show: (params.d == 1 && params.showCS == true)
+        - html: "`Il surplus del consumatore (area azzurra nel grafico di sotto, o lunghezza del segmento blu nel grafico di sopra) è pari a
+                  $$ ${calcs.cs2} $$`"
+          show: (params.d == 2 && params.showCS == true)
+
+    explanation:
+      divs:
+        - html: "`Spiegazione ? .. `"
+          show: params.p != 1000

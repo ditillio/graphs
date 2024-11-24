@@ -1,0 +1,248 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: p, value: 20, min: 0, max: 25}
+- {name: fc, value: 200}
+
+calcs:
+  xopt: max( (params.p-4)*4, 0 )
+  tr: params.p * calcs.xopt
+  vc: (calcs.xopt)^(2) / 8 + 4 * (calcs.xopt)
+  tc: calcs.vc + (params.fc)
+  econprofit: calcs.tr - calcs.vc
+  accprofit: calcs.tr - calcs.tc
+  mc: calcs.xopt / 4 + 4
+  avc: (calcs.xopt) / 8 + 4
+  atc: calcs.xopt / 8 + (params.fc) / calcs.xopt + 4
+  cazz: max(calcs.mc,calcs.atc)
+
+aspectRatio: 2
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+
+    leftGraph: 
+      xAxis:
+        max: 100
+        min: -3
+        ticks: 4
+        title: Breve periodo
+      yAxis:
+        max: 28
+        ticks: 10
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [100, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 28]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# point
+        - Point:
+            coordinates: [calcs.xopt, params.p]
+            color: Red
+            r: 5
+            droplines:
+              vertical: calcs.xopt
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 0.5
+            drag:
+              - vertical: p
+
+# AVC curve
+
+        - Curve:
+            fn: (x) / 8 + 4
+            color: Orange
+            strokeWidth: 0.5
+
+# SR supply curve
+
+        - Curve:
+            fn: max( 0, 4 * (y) - 16 )
+            ind: y
+            color: Red
+            label:
+              text: S_{SR}
+              y: 27
+              position: bl
+            strokeWidth: 3
+
+    rightGraph: 
+      xAxis:
+        min: -3
+        max: 100
+        ticks: 4
+        title: Lungo periodo
+      yAxis:
+        max: 28
+        ticks: 10
+
+      objects:
+
+        - Label:
+                coordinates: [100, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 28]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# points
+        - Point:
+            coordinates: [calcs.xopt, params.p]
+            color: Red
+            r: 5
+            droplines:
+              vertical: calcs.xopt
+            show: params.p >= 14
+        - Point:
+            coordinates: [0, 14]
+            color: Red
+            r: 5
+            show: params.p == 14
+            droplines:
+              vertical: 0
+        - Point:
+            coordinates: [0, params.p]
+            color: Red
+            r: 5
+            droplines:
+              vertical: 0
+            show: params.p < 14
+        - Point:
+            coordinates: [0, 14]
+            color: Red
+            r: 3
+            show: params.p !== 14
+        - Point:
+            coordinates: [40, 14]
+            color: Red
+            r: 3
+            show: params.p !== 14
+
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 0.5
+            drag:
+              - vertical: p
+
+# ATC curve
+
+        - Curve:
+            fn: (x) / 8 + (params.fc) / (x) + 4
+            color: Brown
+            strokeWidth: 0.5
+
+# LR supply curve
+
+        - Curve:
+            fn: max( 0, 4 * (y) - 16 )
+            ind: y
+            min: 14
+            color: Red
+            label:
+              text: S_{LR}
+              y: 27
+              position: bl
+            strokeWidth: 3
+        - Segment:
+            a: [0,0]
+            b: [0,14]
+            color: Red
+            strokeWidth: 3.5
+
+    sidebar:
+      controls:
+      - title: Offerta individuale di breve e di lungo periodo
+        sliders:
+        - param: p
+          label: P
+        divs:
+        - html: "` Quando $P = ${params.p}$ la scelta ottima dell'impresa nel breve periodo e, se il prezzo 
+                  rimane $P = ${params.p}$, anche nel lungo periodo, è produrre ${calcs.xopt.toFixed(0)} unità.  `"
+          show: (params.p > 14)
+        - html: "` Quando $P = ${params.p}$ la scelta ottima di breve periodo dell'impresa è produrre ${calcs.xopt.toFixed(0)} unità.
+                    Nel lungo periodo (se il prezzo rimane $P=${params.p}$) l'impresa è invece indifferente tra rimanere nel mercato
+                    (e produrre ${calcs.xopt.toFixed(0)} unità) e uscire dal mercato (produrre zero unità).  `"
+          show: (params.p == 14)
+        - html: "` Quando $P = ${params.p}$ la scelta ottima di breve periodo dell'impresa è produrre ${calcs.xopt.toFixed(0)} unità.
+                    La scelta ottima di lungo periodo (se il prezzo rimane $P=${params.p}$) è invece uscire dal mercato
+                    (produrre zero unità).  `"
+          show: (params.p < 14)
+
+
+    explanation:
+      divs:
+        - html: "`   `"
+          show: params.p !== 100
+        - html: "`   `"
+          show: params.p !== 100
+        - html: "`   `"
+          show: params.p !== 100
+        - html: "`   `"
+          show: params.p !== 100
+        - html: "`   `"
+          show: params.p !== 100
+        - html: "` Dato che $ATC_{\\\\text{min}}=14$, quando $P=${params.p}$ abbiamo $P>ATC_{\\\\text{min}}$. 
+                  Il massimo profitto contabile è quindi positivo: $R-TC=${calcs.accprofit.toFixed(1)}$. Di conseguenza
+                  l'impresa non esce dal mercato e nel lungo periodo (se il prezzo rimane $P=${params.p}$) continua
+                  a produrre ${calcs.xopt} unità. `"
+          show: params.p > 14
+        - html: "` Dato che $AVC_{\\\\text{min}}=4$ e $ATC_{\\\\text{min}}=14$, quando $P=${params.p}$ abbiamo $P>AVC_{\\\\text{min}}$
+                  e $ P = ATC_{\\\\text{min}}$. Il massimo profitto economico è quindi positivo, mentre quello contabile è 
+                  zero: $R-TC=${calcs.accprofit.toFixed(1)}$. Nel breve periodo l'impresa non cessa l'attività 
+                  (la quantità offerta è ${calcs.xopt} unità) mentre nel lungo periodo (se il prezzo rimane $P=${params.p}$)
+                  potrebbe rimanere nel mercato (continuando a produrre ${calcs.xopt} unità) o uscire dal mercato (produrre zero unità). `"
+          show: params.p == 14
+        - html: "` Dato che $AVC_{\\\\text{min}}=4$ e $ATC_{\\\\text{min}}=14$, quando $P=${params.p}$ abbiamo $P>AVC_{\\\\text{min}}$
+                  e $ P < ATC_{\\\\text{min}}$. Il massimo profitto economico è quindi positivo, ma quello contabile è 
+                  negativo: $R-TC=${calcs.accprofit.toFixed(1)}$. Nel breve periodo l'impresa non cessa l'attività 
+                  (la quantità offerta è ${calcs.xopt} unità) ma nel lungo periodo (se il prezzo rimane $P=${params.p}$)
+                  l'impresa esce dal mercato (la quantità offerta è zero). `"
+          show: params.p < 14 && params.p > 4
+        - html: "` Dato che $AVC_{\\\\text{min}}=4$ e $ATC_{\\\\text{min}}=14$, quando $P=${params.p}$ abbiamo $P=AVC_{\\\\text{min}}$
+                  e $ P < ATC_{\\\\text{min}}$. Il massimo profitto economico è quindi zero, ma quello contabile è 
+                  negativo: $R-TC=${calcs.accprofit.toFixed(1)}$. Nel breve periodo la scelta ottima dell'impresa è cessare l'attività, 
+                  nel lungo periodo uscire dal mercato. `"
+          show: params.p == 4
+        - html: "` Dato che $AVC_{\\\\text{min}}=4$ e $ATC_{\\\\text{min}}=14$, quando $P=${params.p}$ abbiamo $P < AVC_{\\\\text{min}}$
+                  e $ P < ATC_{\\\\text{min}}$. Il massimo profitto economico è quindi negativo, così come quello contabile. Nel
+                  breve periodo la scelta ottima dell'impresa è cessare l'attività, nel lungo periodo uscire dal mercato. `"
+          show: params.p < 4
+        - html: "`   `"
+          show: params.p !== 100
+        - html: "`   `"
+          show: params.p !== 100
+        - html: "`   `"
+          show: params.p !== 100
+        - html: "`  `"
+          show: params.p !== 100
+        - html: "`  `"
+          show: params.p !== 100
+        - html: "`  `"
+          show: params.p !== 100
+        - html: "`  `"
+          show: params.p !== 100
+
+

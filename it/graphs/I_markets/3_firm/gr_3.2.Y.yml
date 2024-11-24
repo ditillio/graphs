@@ -1,0 +1,201 @@
+params:
+- {name: showCS, value: false}
+- {name: p, value: 14, min: 0, max: 20}
+- {name: x, value: 64, min: 10, max: 90}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: alpha, value: 64, min: 36, max: 100}
+- {name: beta, value: 2, min: 1, max: 1000}
+- {name: fc, value: 200, min: 120, max: 200, round: 5}
+- {name: w, value: 8, min: 6, max: 10}
+- {name: maxx, value: 100}
+
+calcs:
+  minavc: (params.w / params.beta)
+  tc: (params.w) * ( (1/params.alpha) * (params.x)^2 + (1/params.beta) * (params.x) ) + params.fc
+  vc: (params.w) * ( (1/params.alpha) * (params.x)^2 + (1/params.beta) * (params.x) )
+  mc: (params.w) * ( 2 * (1/params.alpha) * (params.x) + (1/params.beta) )
+  avc: (params.w) * ( (1/params.alpha) * (params.x) + (1/params.beta) )
+  afc: (params.fc) / (params.x)
+  atc: (calcs.avc) + (calcs.afc)
+
+aspectRatio: 0.7
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 100
+        ticks: 5
+      yAxis:
+        max: 1500
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [100, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 1500]
+                text: "` \\\\text{euro}  `"
+                xPixelOffset: -6
+
+# points
+        - Point: {coordinates: [params.x, calcs.tc], droplines: {vertical: params.x, horizontal: calcs.tc.toFixed(1)}, color: Brown, r: 4}
+        - Point: {coordinates: [params.x, calcs.vc], droplines: {vertical: , horizontal: calcs.vc.toFixed(1)}, color: Orange, r: 4}
+        - Point: {coordinates: [params.x, params.fc], droplines: {vertical: , horizontal: params.fc.toFixed(1)}, color: Gray, r: 4}
+
+# VC curve
+
+        - Curve:
+            fn: (params.w) * ( (1/params.alpha) * (x)^2 + (1/params.beta) * (x) )
+            color: Orange
+            label:
+              text: VC
+              x: 80
+              position: l
+              bgcolor: none
+            strokeWidth: 1.7
+
+# TC curve
+
+        - Curve:
+            fn: (params.w) * ( (1/params.alpha) * (x)^2 + (1/params.beta) * (x) ) + params.fc
+            color: Brown
+            label:
+              text: TC
+              x: 80
+              position: br
+              bgcolor: none
+            strokeWidth: 1.7
+
+# FC curve
+
+        - Curve:
+            fn: params.fc
+            color: Gray
+            label:
+              text: FC
+              x: params.maxx
+              position: l
+              bgcolor: none
+            strokeWidth: 1.7
+
+
+    bottomGraph: 
+      xAxis:
+        max: 100
+        ticks: 5
+      yAxis:
+        max: 30
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [100, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 30]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: -30
+
+# points
+        - Point: {coordinates: [params.x, calcs.atc], droplines: {vertical: params.x, horizontal: calcs.atc.toFixed(1)}, color: Brown, r: 4}
+        - Point: {coordinates: [params.x, calcs.avc], droplines: {vertical: , horizontal: calcs.avc.toFixed(1)}, color: Orange, r: 4}
+        - Point: {coordinates: [params.x, calcs.afc], droplines: {vertical: , horizontal: calcs.afc.toFixed(1)}, color: Gray, r: 4}
+        - Point: {coordinates: [params.x, calcs.mc], droplines: {vertical: , horizontal: calcs.mc.toFixed(1)}, color: Red, r: 4}
+
+        - Point: {coordinates: [0, calcs.minavc], droplines: {horizontal: calcs.minavc.toFixed(2)}, color: Red, r: 0.001}
+
+# ATC curve
+
+        - Curve:
+            fn: (params.w) * ( (1/params.alpha) * (x) + (1/params.beta) ) + params.fc / (x)
+            color: Brown
+            label:
+              text: ATC
+              x: params.maxx-0.5
+              position: b
+              bgcolor: none
+            strokeWidth: 1.7
+
+# AVC curve
+
+        - Curve:
+            fn: (params.w) * ( (1/params.alpha) * (x) + (1/params.beta) )
+            color: Orange
+            label:
+              text: AVC
+              x: params.maxx-0.5
+              position: t
+              bgcolor: none
+            strokeWidth: 1.7
+
+# AFC curve
+
+        - Curve:
+            fn: params.fc / (x)
+            color: Gray
+            label:
+              text: AFC
+              x: params.maxx-0.5
+              position: b
+              bgcolor: none
+            strokeWidth: 1.7
+
+# MC curve
+
+        - Curve:
+            fn: (params.w) * ( 2 * (1/params.alpha) * (x) + (1/params.beta) )
+            color: Red
+            label:
+              text: MC
+              x: params.maxx
+              position: bl
+              bgcolor: none
+            strokeWidth: 1.7
+
+# dropline x
+        - Segment:
+            a: [params.x,0]
+            b: [params.x,1000]
+            color: Brown
+            lineStyle: dotted
+
+
+    sidebar:
+      controls:
+      - title: Costi dell'impresa
+        sliders:
+        - param: x
+          label: X
+        - param: alpha
+          label: \alpha
+        - param: beta
+          label: \beta
+        - param: w
+          label: W
+        - param: fc
+          label: FC
+        divs:
+        - html: "` Al livello di produzione $ X = ${params.x} $ i costi dell'impresa sono
+                  $$ TC = ${calcs.tc.toFixed(1)} $$
+                  $$ VC = ${calcs.vc.toFixed(1)} $$
+                  $$ FC = ${params.fc.toFixed(1)} $$
+                  e quindi, in termini unitari,
+                  $$ ATC = ${calcs.atc.toFixed(1)} $$
+                  $$ AVC = ${calcs.avc.toFixed(1)} $$
+                  $$ AFC = ${calcs.afc.toFixed(1)} $$
+                  $$ MC = ${calcs.mc.toFixed(1)} $$
+                   `"
+          show: params.w > 0

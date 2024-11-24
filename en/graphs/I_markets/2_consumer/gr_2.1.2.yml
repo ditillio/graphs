@@ -1,0 +1,116 @@
+params:
+- {name: showCS, value: false}
+- {name: p, value: 300, min: 0, max: 540, round: 10}
+- {name: p2, value: 400, min: 0, max: 540, round: 10}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: b1, value: 500}
+- {name: b2, value: 200}
+- {name: b3, value: 100}
+- {name: b4, value: 50}
+
+calcs:
+  cs: max((params.b1)-(params.p),0)+max((params.b2)-(params.p),0)+max((params.b3)-(params.p),0)+max((params.b4)-(params.p),0)
+  cs2: max((params.b1)-(params.p2),0)+max((params.b2)-(params.p2),0)+max((params.b3)-(params.p2),0)+max((params.b4)-(params.p2),0)
+  pmax: max(params.p, params.p2)
+  minp2b1: min(params.p2,params.b1)
+  minp2b2: min(params.p2,params.b2)
+  minp2b3: min(params.p2,params.b3)
+  minp2b4: min(params.p2,params.b4)
+  minpb1: min(params.p,params.b1)
+  minpb2: min(params.p,params.b2)
+  minpb3: min(params.p,params.b3)
+  minpb4: min(params.p,params.b4)
+
+
+layout:
+  OneGraphPlusSidebar:
+    graph: 
+      xAxis:
+        max: 5.2
+        ticks: 4
+      yAxis:
+        max: 550
+        ticks: 5
+
+      objects:
+
+        - Label:
+                coordinates: [5.2, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 550]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P
+              x: 4.5
+              position: b
+            drag:
+              - vertical: p
+
+# price line 2
+        - Line:
+            yIntercept: params.p2
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P'
+              x: 5
+              position: b
+            drag:
+              - vertical: p2
+
+# WTP for whole units
+        - Point: {coordinates: [1,params.b1], color: Blue, droplines: {horizontal: params.b1, vertical: }}
+        - Point: {coordinates: [2,params.b2], color: Blue, droplines: {horizontal: params.b2, vertical: }}
+        - Point: {coordinates: [3,params.b3], color: Blue, droplines: {horizontal: params.b3, vertical: }}
+        - Point: {coordinates: [4,params.b4], color: Blue, droplines: {horizontal: params.b4, vertical: }}
+
+# consumer surplus blue
+        - Area: {fn1: params.b1, fn2: calcs.pmax, fill: Blue, opacity: params.ops, min: 0, max: 1, show: calcs.pmax < params.b1 }
+        - Area: {fn1: params.b2, fn2: calcs.pmax, fill: Blue, opacity: params.ops, min: 1, max: 2, show: calcs.pmax < params.b2 }
+        - Area: {fn1: params.b3, fn2: calcs.pmax, fill: Blue, opacity: params.ops, min: 2, max: 3, show: calcs.pmax < params.b3 }
+        - Area: {fn1: params.b4, fn2: calcs.pmax, fill: Blue, opacity: params.ops, min: 3, max: 4, show: calcs.pmax < params.b4 }
+
+# variation red
+        - Area: {fn1: calcs.minp2b1, fn2: params.p, fill: Red, opacity: params.ops, min: 0, max: 1, show: params.p2 > params.p && params.p < params.b1}
+        - Area: {fn1: calcs.minp2b2, fn2: params.p, fill: Red, opacity: params.ops, min: 1, max: 2, show: params.p2 > params.p && params.p < params.b2}
+        - Area: {fn1: calcs.minp2b3, fn2: params.p, fill: Red, opacity: params.ops, min: 2, max: 3, show: params.p2 > params.p && params.p < params.b3}
+        - Area: {fn1: calcs.minp2b4, fn2: params.p, fill: Red, opacity: params.ops, min: 3, max: 4, show: params.p2 > params.p && params.p < params.b4}
+
+# variation green
+        - Area: {fn1: calcs.minpb1, fn2: params.p2, fill: Green, opacity: params.ops, min: 0, max: 1, show: params.p > params.p2 && params.p2 < params.b1}
+        - Area: {fn1: calcs.minpb2, fn2: params.p2, fill: Green, opacity: params.ops, min: 1, max: 2, show: params.p > params.p2 && params.p2 < params.b2}
+        - Area: {fn1: calcs.minpb3, fn2: params.p2, fill: Green, opacity: params.ops, min: 2, max: 3, show: params.p > params.p2 && params.p2 < params.b3}
+        - Area: {fn1: calcs.minpb4, fn2: params.p2, fill: Green, opacity: params.ops, min: 3, max: 4, show: params.p > params.p2 && params.p2 < params.b4}
+
+    sidebar:
+      controls:
+      - title: Variazioni di surplus
+        sliders:
+        - param: p
+          label: P
+        - param: p2
+          label: P'
+        divs:
+          - html: "`Quando il prezzo è $P=${params.p}$ il surplus del consumatore è pari alla somma delle aree blu e rossa, ovvero $ ${calcs.cs}$. 
+                  Quando il prezzo aumenta a $P'=${params.p2}$, il surplus del consumatore è pari all'area blu, ovvero $ ${calcs.cs2}$. Il negativo 
+                  dell'area rossa, quindi, è la variazione di surplus del consumatore dovuta all'aumento del prezzo:
+                  $$  ${calcs.cs2}-${calcs.cs}=${calcs.cs2-calcs.cs} $$    `"
+            show: (params.p2 > params.p) 
+          - html: "`Quando il prezzo è $P=${params.p}$ il surplus del consumatore è pari all'area blu, ovvero $ ${calcs.cs}$. 
+                  Quando il prezzo si riduce a $P'=${params.p2}$, il surplus del consumatore è pari alla somma delle aree blu e verde, ovvero $ ${calcs.cs2}$. 
+                  L'area verde, quindi, è la variazione di surplus del consumatore dovuta alla riduzione del prezzo:
+                  $$  ${calcs.cs2}-${calcs.cs}=${calcs.cs2-calcs.cs} $$    `"
+            show: (params.p2 < params.p) 

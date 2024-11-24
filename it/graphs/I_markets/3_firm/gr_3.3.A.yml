@@ -1,0 +1,145 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: beta, value: 8, min: 5, max: 10}
+- {name: a, value: 0.5, min: 0.45, max: 0.55, round: 0.01}
+- {name: l, value: 64, min: 5, max: 100, round: 0.1}
+- {name: p, value: 16, min: 6, max: 18}
+- {name: w, value: 8, min: 6, max: 15}
+
+calcs:
+  x: (params.beta)*(params.l)^(params.a)
+  mp: (params.beta)*(params.a)*(params.l)^((params.a)-1)
+  mrp: params.p*calcs.mp
+
+aspectRatio: 1
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 100
+        ticks: 5
+      yAxis:
+        max: 2
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [100, 0]
+                text: "` \\\\text{ore} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 2]
+                text: "` \\\\text{output/ora}  `"
+                xPixelOffset: -6
+
+# points
+        - Point:
+            coordinates: [params.l, calcs.mp]
+            droplines: {vertical: params.l.toFixed(1), horizontal: calcs.mp.toFixed(1)}
+            color: Blue
+            r: 4
+            drag:
+            - horizontal: l
+
+# marginal product
+
+        - Curve:
+            fn: (params.beta)*(params.a)*(x)^((params.a)-1)
+            color: Blue
+            label:
+              text: MP
+              x: 6
+              position: l
+            strokeWidth: 1.7
+
+# real wage line
+        - Line:
+            yIntercept: params.w/params.p
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: W/P
+              x: 95
+              position: b
+
+
+
+
+
+
+    bottomGraph: 
+      xAxis:
+        max: 100
+        ticks: 5
+      yAxis:
+        max: 32
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [100, 0]
+                text: "` \\\\text{ore} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 32]
+                text: "` \\\\text{euro/ora}  `"
+                xPixelOffset: -6
+
+# points
+        - Point:
+            coordinates: [params.l, calcs.mrp]
+            droplines: {vertical: params.l.toFixed(1), horizontal: calcs.mrp.toFixed(1)}
+            color: Blue
+            r: 4
+            drag:
+            - horizontal: l
+
+# value of marginal product
+
+        - Curve:
+            fn: (params.p)*(params.beta)*(params.a)*(x)^((params.a)-1)
+            color: Blue
+            label:
+              text: MRP
+              x: 6
+              position: l
+            strokeWidth: 1.7
+
+# wage line
+        - Line:
+            yIntercept: params.w
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: W
+              x: 95
+              position: b
+            drag:
+              - vertical: w
+
+    sidebar:
+      controls:
+      - title: Funzione di produzione dell'impresa
+        sliders:
+        - param: l
+          label: L
+        - param: w
+          label: W
+        - param: p
+          label: P
+        divs:
+        - html: "` I parametri $\\\\alpha$ e $\\\\beta$ sono indici della produttività del lavoro.
+                Aumentando $\\\\alpha$ o $\\\\beta$ (o entrambi), la quantità di output ($X$) a 
+                parità di lavoro impiegato ($L$). `"
+          show: params.a > 0

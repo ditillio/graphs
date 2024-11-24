@@ -1,0 +1,160 @@
+---
+#schema: EconSchema
+#version: 1
+aspectRatio: 2.3
+params:
+  - name: g
+    value: 0
+  - name: z
+    value: 200
+    min: 100
+    max: 300
+  - name: x
+    value: 5
+    min: 2
+    max: 8
+    round: 1
+  - name: y
+    value: 4
+    min: 2
+    max: 8
+    round: 1
+  - name: showINDIFF
+    value: 0
+calcs:
+  zz: ((params.x)*(params.y))^(0.5)
+layout:
+  MathboxPlusGraphPlusSidebar:
+    mathbox:
+      xAxis:
+        min: 0
+        max: 11
+        step: 1
+        ticks: 5
+        title: litri
+      yAxis:
+        min: 0
+        max: 11
+        step: 1
+        ticks: 5
+        title: kg
+      zAxis:
+        min: 0
+        max: 11
+        ticks: 0
+        step: 10
+        title: WTP
+      objects:
+      - MathboxPlane:
+            y: params.y
+            fill: colors.orange
+            opacity: 0.3
+            shaded: false
+      - MathboxFunctionSurface:
+          fn:
+            fn: "( ((x)*(y))^(0.5) )"
+            samplePoints: 20
+          shaded: false
+          fill: colors.blue
+          opacity: 0.4
+      - MathboxCurve:
+          fn:
+            fn: " params.y "
+            fnZ: "( ((x)*(params.y))^(0.5) )"
+          strokeWidth: 5
+          stroke: colors.red
+          opacity: 0.4
+      - MathboxPoint:
+          x: params.x
+          y: params.y
+          z: calcs.zz
+          stroke: colors.demand
+      - MathboxLine:
+          x1: params.x
+          x2: params.x
+          y2: params.y
+          stroke: colors.demand
+          strokeWidth: 10
+          lineStyle: dotted
+      - MathboxLine:
+          y1: params.y
+          x2: params.x
+          y2: params.y
+          stroke: colors.demand
+          strokeWidth: 10
+          lineStyle: dotted
+      - MathboxLine:
+          x1: params.x
+          y1: params.y
+          x2: params.x
+          y2: params.y
+          z2: calcs.zz
+          stroke: colors.demand
+          strokeWidth: 10
+          lineStyle: dotted
+#      - MathboxCurve:
+#          fn:
+#            fn: "0.5 * ( 40 - (y) - sqrt( 1600 - 80 * (y) + (y) * (y) + 160 * (y) - 4 * (y) * (y) - 8 * params.z ) )"
+#            fnZ: params.z
+#            ind: y
+#          strokeWidth: 10
+#          stroke: Black
+#          opacity: 0.4
+
+    graph: 
+      xAxis:
+        max: 10.5
+        ticks: 5
+      yAxis:
+        max: 11
+        ticks: 5
+
+      objects:
+
+        - Curve:
+            fn: "( ((x)*(params.y))^(0.5) )"
+            strokeWidth: 1.5
+            color: Red
+            opacity: 0.4
+
+        - Label:
+              coordinates: [10.5, 0]
+              text: "` \\\\text{litri} `"
+              yPixelOffset: 0
+              position: l
+        - Label:
+              coordinates: [0, 10.3]
+              text: "` \\\\text{WTP}  `"
+              xPixelOffset: -5
+              position: b
+        - Point:
+            coordinates: [params.x,calcs.zz]
+            droplines:
+              vertical: params.x
+              horizontal: 
+            color: Blue
+# tangent
+        - Line:
+            point: [params.x,calcs.zz]
+            slope: 0.5 * ( params.y / params.x )^0.5
+            color: Black
+            min: params.x-4
+            max: params.x+4
+            strokeWidth: 1
+
+
+
+
+    sidebar:
+      controls:
+        - title: Utility Functions and Indifference Maps
+          description: Drag the point in the right-hand graph to see how the location of the indifference curve changes.
+          sliders:
+            - param: x
+              label: X_1
+            - param: y
+              label: X_2
+    explanation:
+      divs:
+            - html: "` bla bla  `"
+

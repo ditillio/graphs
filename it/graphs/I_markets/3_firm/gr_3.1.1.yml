@@ -1,0 +1,213 @@
+params:
+- {name: showCS, value: false}
+- {name: p, value: 40, min: 10, max: 60, round: 5}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: opss, value: 0.3}
+- {name: opps, value: 0.5}
+- {name: c, value: 10}
+- {name: d, value: 10}
+
+calcs:
+  tc1: params.c * 1 + ( params.d / 2) * 1^2
+  tc2: params.c * 2 + ( params.d / 2) * 2^2
+  tc3: params.c * 3 + ( params.d / 2) * 3^2
+  tc4: params.c * 4 + ( params.d / 2) * 4^2
+  tc5: params.c * 5 + ( params.d / 2) * 5^2
+  mc1: calcs.tc1
+  mc2: calcs.tc2 - calcs.tc1
+  mc3: calcs.tc3 - calcs.tc2
+  mc4: calcs.tc4 - calcs.tc3
+  mc5: calcs.tc5 - calcs.tc4
+  ps: max((params.p)-(calcs.mc1),0)+max((params.p)-(calcs.mc2),0)+max((params.p)-(calcs.mc3),0)+max((params.p)-(calcs.mc4),0)+max((params.p)-(calcs.mc5),0)
+
+aspectRatio: 0.8
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 5.5
+        ticks: 4
+      yAxis:
+        max: 310
+        ticks: 5
+
+      objects:
+
+        - Label:
+                coordinates: [5.2, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 310]
+                text: "` \\\\text{euro}  `"
+                xPixelOffset: 0
+
+# price line
+        - Line:
+            yIntercept: 0
+            slope: params.p
+            color: Green
+            strokeWidth: 0.75
+            drag:
+              - vertical: p
+            show: params.d == 2
+
+        - Point: {coordinates: [0.05,0], r: 5, color: Green}
+        - Point: {coordinates: [1, (params.p)], r: 5, color: Green, droplines: {horizontal: (params.p), vertical: }}
+        - Point: {coordinates: [2, (2*params.p)], r: 5, color: Green, droplines: {horizontal: (2*params.p), vertical: }}
+        - Point: {coordinates: [3, (3*params.p)], r: 5, color: Green, droplines: {horizontal: (3*params.p), vertical: }}
+        - Point: {coordinates: [4, (4*params.p)], r: 5, color: Green, droplines: {horizontal: (4*params.p), vertical: }}
+        - Point: {coordinates: [5, (5*params.p)], r: 5, color: Green, droplines: {horizontal: (5*params.p), vertical: }}
+
+# producer surplus
+        - Segment: {a: [1,calcs.tc1], b: [1,(params.p)], color: LawnGreen, show: params.p > calcs.mc1 && params.p < calcs.mc2, strokeWidth: 5}
+        - Segment: {a: [2,calcs.tc2], b: [2,(2*params.p)], color: LawnGreen, show: params.p >= calcs.mc2 && params.p < calcs.mc3, strokeWidth: 5}
+        - Segment: {a: [3,calcs.tc3], b: [3,(3*params.p)], color: LawnGreen, show: params.p >= calcs.mc3 && params.p < calcs.mc4, strokeWidth: 5}
+        - Segment: {a: [4,calcs.tc4], b: [4,(4*params.p)], color: LawnGreen, show: params.p >= calcs.mc4 && params.p < calcs.mc5, strokeWidth: 5}
+        - Segment: {a: [5,calcs.tc5], b: [5,(5*params.p)], color: LawnGreen, show: params.p >= calcs.mc5, strokeWidth: 5}
+
+# total C for whole units
+        - Point: {coordinates: [0,0], r: 5, color: Red}
+        - Point: {coordinates: [1,calcs.tc1], r: 5, color: Red, droplines: {horizontal: calcs.tc1, vertical: }}
+        - Point: {coordinates: [2,calcs.tc2], r: 5, color: Red, droplines: {horizontal: calcs.tc2, vertical: }}
+        - Point: {coordinates: [3,calcs.tc3], r: 5, color: Red, droplines: {horizontal: calcs.tc3, vertical: }}
+        - Point: {coordinates: [4,calcs.tc4], r: 5, color: Red, droplines: {horizontal: calcs.tc4, vertical: }}
+        - Point: {coordinates: [5,calcs.tc5], r: 5, color: Red, droplines: {horizontal: calcs.tc5, vertical: }}
+
+
+    bottomGraph: 
+      xAxis:
+        max: 5.5
+        ticks: 4
+      yAxis:
+        max: 65
+        ticks: 5
+
+      objects:
+
+        - Label:
+                coordinates: [5.2, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 63]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P
+              x: 5.3
+              position: b
+            drag:
+              - vertical: p
+
+# marginal C for whole units
+        - Point: {coordinates: [1,calcs.mc1], r: 5, color: Red, droplines: {horizontal: calcs.mc1, vertical: }}
+        - Point: {coordinates: [2,calcs.mc2], r: 5, color: Red, droplines: {horizontal: calcs.mc2, vertical: }}
+        - Point: {coordinates: [3,calcs.mc3], r: 5, color: Red, droplines: {horizontal: calcs.mc3, vertical: }}
+        - Point: {coordinates: [4,calcs.mc4], r: 5, color: Red, droplines: {horizontal: calcs.mc4, vertical: }}
+        - Point: {coordinates: [5,calcs.mc5], r: 5, color: Red, droplines: {horizontal: calcs.mc5, vertical: }}
+
+# producer surplus
+        - Area: {fn1: params.p, fn2: calcs.mc1, fill: GreenYellow, opacity: params.opps, min: 0, max: 1, show: params.p > calcs.mc1 }
+        - Area: {fn1: params.p, fn2: calcs.mc2, fill: GreenYellow, opacity: params.opps, min: 1, max: 2, show: params.p > calcs.mc2 }
+        - Area: {fn1: params.p, fn2: calcs.mc3, fill: GreenYellow, opacity: params.opps, min: 2, max: 3, show: params.p > calcs.mc3 }
+        - Area: {fn1: params.p, fn2: calcs.mc4, fill: GreenYellow, opacity: params.opps, min: 3, max: 4, show: params.p > calcs.mc4 }
+        - Area: {fn1: params.p, fn2: calcs.mc5, fill: GreenYellow, opacity: params.opps, min: 4, max: 5, show: params.p > calcs.mc5 }
+
+    sidebar:
+      controls:
+      - title: Surplus del venditore price-taker
+        description: Spostare il cursore qui sotto (o muovere la retta orizzontale nel grafico di sotto) per vedere come varia il
+                        surplus del venditore al variare del prezzo del bene.
+        sliders:
+        - param: p
+          label: P
+        divs:
+        - html: "`Quando $ P = ${params.p} $ l'impresa non produce nulla, dato che anche la prima unità,
+        quella che le costa meno, ovvero ${calcs.mc1.toFixed(0)}, costa più di ${params.p.toFixed(0)}. Il surplus
+        del produttore è zero.`"
+          show: (params.p < calcs.mc1) 
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce una unità del bene (è in realtà indifferente tra produrne una e 
+        non produrre affatto). Infatti
+        la prima unità, quella che le costa meno, ha un costo pari al prezzo di vendita ${params.p.toFixed(0)}. Non ne
+         produce di più perché la seconda, terza, quarta, quinta, ... unità costano ${calcs.mc2}, ${calcs.mc3}, ${calcs.mc4}, ${calcs.mc5}, ...,
+         cioè tutte più di ${params.p}. Il surplus del produttore è zero.`"
+          show: (params.p == calcs.mc1) 
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce una unità del bene, che le costa ${calcs.mc1}. Non ne produce di più perché 
+        la seconda, terza, quarta, quinta, ... unità costano ${calcs.mc2}, ${calcs.mc3}, ${calcs.mc4}, ${calcs.mc5}, ...,
+         cioè tutte più di ${params.p}. 
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  ${params.p} - ${calcs.mc1} = ${calcs.ps} $$ `"
+          show: (calcs.mc1 < params.p) && (params.p < calcs.mc2) 
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce due unità del bene (è in realtà indifferente tra produrne una o due, dato che la seconda 
+        unità ha un costo pari al prezzo di vendita). Non ne produce più di due perché 
+        la terza, quarta, quinta, ... unità costano ${calcs.mc3}, ${calcs.mc4}, ${calcs.mc5}, ..., cioè tutte più di ${params.p}.
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  2\\\\times ${params.p} - ${calcs.tc2}= ${calcs.ps} $$ `"
+          show: (calcs.mc2 == params.p) 
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce due unità del bene, che le costano complessivamente
+         $ ${calcs.mc1} + ${calcs.mc2} = ${calcs.tc2} $. Non ne produce di più perché 
+        la terza, quarta, quinta, ... unità costano ${calcs.mc3}, ${calcs.mc4}, ${calcs.mc5}, ...,
+         cioè tutte più di ${params.p}. 
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  2\\\\times ${params.p} - ${calcs.tc2} = ${calcs.ps} $$ `"
+          show: (calcs.mc2 < params.p) && (params.p < calcs.mc3) 
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce tre unità del bene (è in realtà indifferente tra produrne due o tre, dato che la terza 
+        unità ha un costo pari al prezzo di vendita). Non ne produce più di tre perché 
+        la quarta, quinta, ... unità costano ${calcs.mc4}, ${calcs.mc5}, ..., cioè tutte più di ${params.p}.
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  3\\\\times ${params.p} - ${calcs.tc3}= ${calcs.ps} $$ `"
+          show: (calcs.mc3 == params.p) 
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce tre unità del bene, che le costano complessivamente
+         $ ${calcs.mc1} + ${calcs.mc2} + ${calcs.mc3} = ${calcs.tc3} $. Non ne produce di più perché 
+        la quarta, quinta, ... unità costano ${calcs.mc4}, ${calcs.mc5}, ...,
+         cioè tutte più di ${params.p}. 
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  3\\\\times ${params.p} - ${calcs.tc3} = ${calcs.ps} $$ `"
+          show: (calcs.mc3 < params.p) && (params.p < calcs.mc4) 
+
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce quattro unità del bene (è in realtà indifferente tra produrne tre o quattro, dato che la quarta 
+        unità ha un costo pari al prezzo di vendita). Non ne produce più di quattro perché 
+        la quinta, ... unità costano ${calcs.mc5}, ..., cioè tutte più di ${params.p}.
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  4\\\\times ${params.p} - ${calcs.tc4}= ${calcs.ps} $$ `"
+          show: (calcs.mc4 == params.p) 
+
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce quattro unità del bene, che le costano complessivamente
+         $ ${calcs.mc1} + ${calcs.mc2} + ${calcs.mc3} + ${calcs.mc4} = ${calcs.tc4} $. Non ne produce di più perché 
+        la quinta, ... unità costano ${calcs.mc5}, ...,
+         cioè tutte più di ${params.p}. 
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  4\\\\times ${params.p} - ${calcs.tc4} = ${calcs.ps} $$ `"
+          show: (calcs.mc4 < params.p) && (params.p < calcs.mc5) 
+
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce cinque unità del bene (è in realtà indifferente tra produrne quattro o cinque, dato che la quinta 
+        unità ha un costo pari al prezzo di vendita). Non ne produce più di cinque perché 
+        la sesta, ... unità (costi non illustrati nel grafico) costano tutte più di ${params.p}.
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  5\\\\times ${params.p} - ${calcs.tc5}= ${calcs.ps} $$ `"
+          show: (calcs.mc5 == params.p) 
+
+        - html: "`Quando $ P = ${params.p} $ l'impresa produce cinque unità del bene, che le costano complessivamente
+         $ ${calcs.mc1} + ${calcs.mc2} + ${calcs.mc3} + ${calcs.mc4} + ${calcs.mc5} = ${calcs.tc5} $. 
+         Non ne produce di più perché 
+        la sesta, ... unità (costi non illustrati nel grafico) costano tutte più di ${params.p}. 
+        Il surplus del produttore (area rossa nel grafico di sotto, o lunghezza del segmento rosso nel grafico di sopra) è
+        $$  5\\\\times ${params.p} - ${calcs.tc5} = ${calcs.ps} $$ `"
+          show: (calcs.mc5 < params.p) 
+
+

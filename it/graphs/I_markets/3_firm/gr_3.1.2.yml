@@ -1,0 +1,133 @@
+params:
+- {name: showCS, value: false}
+- {name: p, value: 30, min: 10, max: 60, round: 5}
+- {name: p2, value: 40, min: 10, max: 60, round: 5}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: opss, value: 0.3}
+- {name: opps, value: 0.5}
+- {name: c, value: 10}
+- {name: d, value: 10}
+
+calcs:
+  tc1: params.c * 1 + ( params.d / 2) * 1^2
+  tc2: params.c * 2 + ( params.d / 2) * 2^2
+  tc3: params.c * 3 + ( params.d / 2) * 3^2
+  tc4: params.c * 4 + ( params.d / 2) * 4^2
+  tc5: params.c * 5 + ( params.d / 2) * 5^2
+  mc1: calcs.tc1
+  mc2: calcs.tc2 - calcs.tc1
+  mc3: calcs.tc3 - calcs.tc2
+  mc4: calcs.tc4 - calcs.tc3
+  mc5: calcs.tc5 - calcs.tc4
+  ps: max((params.p)-(calcs.mc1),0)+max((params.p)-(calcs.mc2),0)+max((params.p)-(calcs.mc3),0)+max((params.p)-(calcs.mc4),0)+max((params.p)-(calcs.mc5),0)
+  ps2: max((params.p2)-(calcs.mc1),0)+max((params.p2)-(calcs.mc2),0)+max((params.p2)-(calcs.mc3),0)+max((params.p2)-(calcs.mc4),0)+max((params.p2)-(calcs.mc5),0)
+  pmin: min(params.p, params.p2)
+  maxpmc1: max(params.p,calcs.mc1)
+  maxpmc2: max(params.p,calcs.mc2)
+  maxpmc3: max(params.p,calcs.mc3)
+  maxpmc4: max(params.p,calcs.mc4)
+  maxpmc5: max(params.p,calcs.mc5)
+  maxp2mc1: max(params.p2,calcs.mc1)
+  maxp2mc2: max(params.p2,calcs.mc2)
+  maxp2mc3: max(params.p2,calcs.mc3)
+  maxp2mc4: max(params.p2,calcs.mc4)
+  maxp2mc5: max(params.p2,calcs.mc5)
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 5.5
+        ticks: 4
+      yAxis:
+        max: 65
+        ticks: 5
+
+      objects:
+
+        - Label:
+                coordinates: [5.2, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 63]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P
+              x: 5.5
+              position: b
+            drag:
+              - vertical: p
+
+# price line 2
+        - Line:
+            yIntercept: params.p2
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P'
+              x: 5.3
+              position: b
+            drag:
+              - vertical: p2
+
+# marginal C for whole units
+        - Point: {coordinates: [1,calcs.mc1], r: 5, color: Red, droplines: {horizontal: calcs.mc1, vertical: }}
+        - Point: {coordinates: [2,calcs.mc2], r: 5, color: Red, droplines: {horizontal: calcs.mc2, vertical: }}
+        - Point: {coordinates: [3,calcs.mc3], r: 5, color: Red, droplines: {horizontal: calcs.mc3, vertical: }}
+        - Point: {coordinates: [4,calcs.mc4], r: 5, color: Red, droplines: {horizontal: calcs.mc4, vertical: }}
+        - Point: {coordinates: [5,calcs.mc5], r: 5, color: Red, droplines: {horizontal: calcs.mc5, vertical: }}
+
+# producer surplus green
+        - Area: {fn1: calcs.pmin, fn2: calcs.mc1, fill: GreenYellow, opacity: params.opps, min: 0, max: 1, show: calcs.pmin > calcs.mc1 }
+        - Area: {fn1: calcs.pmin, fn2: calcs.mc2, fill: GreenYellow, opacity: params.opps, min: 1, max: 2, show: calcs.pmin > calcs.mc2 }
+        - Area: {fn1: calcs.pmin, fn2: calcs.mc3, fill: GreenYellow, opacity: params.opps, min: 2, max: 3, show: calcs.pmin > calcs.mc3 }
+        - Area: {fn1: calcs.pmin, fn2: calcs.mc4, fill: GreenYellow, opacity: params.opps, min: 3, max: 4, show: calcs.pmin > calcs.mc4 }
+        - Area: {fn1: calcs.pmin, fn2: calcs.mc5, fill: GreenYellow, opacity: params.opps, min: 4, max: 5, show: calcs.pmin > calcs.mc5 }
+
+# variation orange
+        - Area: {fn1: params.p2, fn2: calcs.maxpmc1, fill: orange, opacity: params.opss, min: 0, max: 1, show: params.p2 > params.p && params.p2 > calcs.mc1}
+        - Area: {fn1: params.p2, fn2: calcs.maxpmc2, fill: orange, opacity: params.opss, min: 1, max: 2, show: params.p2 > params.p && params.p2 > calcs.mc2}
+        - Area: {fn1: params.p2, fn2: calcs.maxpmc3, fill: orange, opacity: params.opss, min: 2, max: 3, show: params.p2 > params.p && params.p2 > calcs.mc3}
+        - Area: {fn1: params.p2, fn2: calcs.maxpmc4, fill: orange, opacity: params.opss, min: 3, max: 4, show: params.p2 > params.p && params.p2 > calcs.mc4}
+        - Area: {fn1: params.p2, fn2: calcs.maxpmc5, fill: orange, opacity: params.opss, min: 4, max: 5, show: params.p2 > params.p && params.p2 > calcs.mc5}
+
+# variation purple
+        - Area: {fn1: params.p, fn2: calcs.maxp2mc1, fill: purple, opacity: params.opss, min: 0, max: 1, show: params.p > params.p2 && params.p > calcs.mc1}
+        - Area: {fn1: params.p, fn2: calcs.maxp2mc2, fill: purple, opacity: params.opss, min: 1, max: 2, show: params.p > params.p2 && params.p > calcs.mc2}
+        - Area: {fn1: params.p, fn2: calcs.maxp2mc3, fill: purple, opacity: params.opss, min: 2, max: 3, show: params.p > params.p2 && params.p > calcs.mc3}
+        - Area: {fn1: params.p, fn2: calcs.maxp2mc4, fill: purple, opacity: params.opss, min: 3, max: 4, show: params.p > params.p2 && params.p > calcs.mc4}
+        - Area: {fn1: params.p, fn2: calcs.maxp2mc5, fill: purple, opacity: params.opss, min: 4, max: 5, show: params.p > params.p2 && params.p > calcs.mc5}
+
+    sidebar:
+      controls:
+      - title: Variazioni di surplus del produttore
+        sliders:
+        - param: p
+          label: P
+        - param: p2
+          label: P'
+        divs:
+          - html: "`Quando il prezzo è $P=${params.p}$ il surplus del produttore è pari all'area verde, ovvero $ ${calcs.ps}$. 
+                  Quando il prezzo aumenta a $P'=${params.p2}$, il surplus del produttore è pari alla 
+                  somma delle aree verde e arancione, ovvero $ ${calcs.ps2}$. L'area arancione, quindi, 
+                  è la variazione di surplus del produttore dovuta all'aumento del prezzo:
+                  $$  ${calcs.ps2}-${calcs.ps}=${calcs.ps2-calcs.ps} $$    `"
+            show: (params.p2 > params.p) 
+          - html: "`Quando il prezzo è $P=${params.p}$ il surplus del consumatore è pari alla somma delle aree verde e viola, ovvero $ ${calcs.ps}$. 
+                  Quando il prezzo si riduce a $P'=${params.p2}$, il surplus del produttore è pari all'area verde, ovvero $ ${calcs.ps2}$. 
+                  Il negativo dell'area viola, quindi, è la variazione di surplus del produttore dovuta alla riduzione del prezzo:
+                  $$  ${calcs.ps2}-${calcs.ps}=${calcs.ps2-calcs.ps} $$    `"
+            show: (params.p2 < params.p) 

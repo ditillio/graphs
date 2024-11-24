@@ -1,0 +1,20 @@
+{% if include.bootstrap %}
+<script src="{{ site.baseurl }}/static/js/bootstrap.bundle.min.js"></script>
+{% endif %}
+<script src="{{ site.baseurl }}/static/js/kg3d.{{ include.KGversion | default: '0.2.7' }}.js"></script>
+{% if include.renderMath %}
+<script>
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false},
+            {left: "\\[", right: "\\]", display: false},
+            {left: "\\(", right: "\\)", display: true}
+        ]
+    });
+
+    document.body.innerHTML
+        = document.body.innerHTML
+        .replace(/€/g, "$");
+</script>
+{% endif %}

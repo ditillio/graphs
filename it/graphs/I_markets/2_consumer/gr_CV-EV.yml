@@ -1,0 +1,177 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: a, value: 1, min: 1, max: 2}
+- {name: b, value: 1, min: 1, max: 2}
+
+- {name: PX, value: 4, min: 2, max: 8}
+- {name: PXnew, value: 6, min: 2, max: 8}
+- {name: PY, value: 4}
+
+- {name: M, value: 120}
+
+
+calcs:
+
+  rX: (params.a) / ( (params.a) + (params.b) ) 
+  rY: (params.b) / ( (params.a) + (params.b) ) 
+
+  maxX: (params.M) / (params.PX)
+  maxY: (params.M) / (params.PY)
+
+  percentchangePX: ( (params.PXnew) - (params.PX) ) / (params.PX)
+
+  CV: (-1) * (params.M) * ( ((params.PXnew)/(params.PX))^(calcs.rX) - 1 )
+
+  compensatedM: (params.M) * ((params.PXnew)/(params.PX))^(calcs.rX)
+
+  EV: (-1) * (params.M) * ( 1 - (1+(calcs.percentchangePX))^(-(calcs.rX)) )
+
+  optX: (calcs.rX) * (params.M) / (params.PX)
+  optY: (calcs.rY) * (params.M) / (params.PY)
+
+  optXnew: (calcs.rX) * (params.M) / (params.PXnew)
+  optYnew: (calcs.rY) * (params.M) / (params.PY)
+
+  compensatedX: (calcs.rX) * (calcs.compensatedM) / (params.PXnew)
+  compensatedY: (calcs.rY) * (calcs.compensatedM) / (params.PY)
+
+  maxU: ( (calcs.optX)^(params.a) ) * ( (calcs.optY)^(params.b) )
+  newU: ( (calcs.optXnew)^(params.a) ) * ( (calcs.optYnew)^(params.b) )
+
+
+aspectRatio: 1.25
+
+layout:
+  type: OneGraphPlusSidebar
+  def:
+    graph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: 35
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: 35
+        ticks: 0
+      objects:
+
+      - Label:
+            coordinates: [35, 0]
+            text: "` \\\\text{consumo} `"
+
+      - Label:
+            coordinates: [0, 35]
+            text: "` \\\\text{consumo}  `"
+
+# old budget line
+      - type: Segment
+        def:
+          a:
+          - 0
+          - calcs.maxY
+          b:
+          - calcs.maxX
+          - 0
+          color: Blue
+          strokeWidth: 2
+
+# new budget line
+      - type: Segment
+        def:
+          a:
+          - 0
+          - calcs.maxY
+          b:
+          - (params.M) / (params.PXnew)
+          - 0
+          color: Blue
+          strokeWidth: 2
+
+# old optimal bundle
+      - Point:
+          coordinates: [calcs.optX, calcs.optY]
+#          droplines: {vertical: , horizontal: }
+          color: Blue
+          r: 4
+          label:
+            text: A
+            position: bl
+
+# new optimal bundle
+      - Point:
+          coordinates: [calcs.optXnew, calcs.optYnew]
+#          droplines: {vertical: , horizontal: }
+          color: Blue
+          r: 4
+
+# compensated optimal bundle
+      - Point:
+          coordinates: [calcs.compensatedX, calcs.compensatedY]
+#          droplines: {vertical: , horizontal: }
+          color: Red
+          r: 4
+
+# optimal bundle indiff curve
+      - Curve:
+          fn: ((calcs.maxU)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+
+# new optimal bundle indiff curve
+      - Curve:
+          fn: ((calcs.newU)/((x)^(params.a)))^(1/params.b)
+          color: Black
+          strokeWidth: 1
+
+
+
+
+
+
+
+
+
+
+
+
+    sidebar:
+      controls:
+
+      - title: Scelta ottima del consumatore/risparmiatore
+
+        sliders:
+        - param: a
+          label: a
+        - param: b
+          label: b
+        - param: M
+          label: M
+        - param: PX
+          label: P_X
+        - param: PXnew
+          label: P'_X
+
+
+    explanation:
+        divs:
+        - html: "` $M=${params.M}$ e $M^c=${calcs.compensatedM}$ `"
+        - html: "` $X=${calcs.optX}$ `"
+        - html: "` $Y=${calcs.optY}$ `"
+        - html: "` $X^c=${calcs.compensatedX}$ `"
+        - html: "` $Y^c=${calcs.compensatedY}$ `"
+
+
+
+
+
+
+
+
+
+
+

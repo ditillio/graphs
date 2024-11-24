@@ -1,0 +1,277 @@
+params:
+- {name: show, value: 0}
+- {name: p, value: 25, min: 5, max: 45}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: opss, value: 0.3}
+- {name: opps, value: 0.5}
+- {name: mc1, value: 6}
+- {name: mc2, value: 12}
+- {name: mc3, value: 18}
+- {name: mc4, value: 24}
+- {name: mc5, value: 30}
+- {name: mc6, value: 36}
+- {name: mc7, value: 42}
+- {name: mc8, value: 48}
+- {name: avc1, value: 6}
+- {name: avc2, value: 9}
+- {name: avc3, value: 12}
+- {name: avc4, value: 15}
+- {name: avc5, value: 18}
+- {name: avc6, value: 21}
+- {name: avc7, value: 24}
+- {name: avc8, value: 27}
+- {name: x, value: 0, min: 0, max: 8}
+
+calcs:
+  tr: params.x * params.p
+  vc: (6 + 3 * (params.x -1))*params.x
+  avc: (6 + 3 * (params.x -1))
+  profit: calcs.tr - calcs.vc
+
+aspectRatio: 1
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 8.9
+        ticks: 8
+      yAxis:
+        max: 50
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [8.5, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 50]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+        - Label:
+                coordinates: [8, params.p]
+                text: "` P = MR `"
+                xPixelOffset: 0
+                color: Green
+                position: l
+        - Label:
+                coordinates: [8, params.avc8+1.5]
+                text: "` AVC `"
+                xPixelOffset: 0
+                color: Orange
+                position: bl
+        - Label:
+                coordinates: [8, params.mc8+1]
+                text: "` MC `"
+                xPixelOffset: 0
+                color: Red
+                position: bl
+
+
+# price
+        - Point: {coordinates: [1000,params.p], r: 4, color: Green, droplines: {horizontal: params.p, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [8,params.p], r: 4, color: Green, droplines: {vertical: }, opacity: params.opss}
+        - Point: {coordinates: [1,params.p], r: 4, color: Green, droplines: {vertical: }, opacity: params.opss}
+        - Point: {coordinates: [2,params.p], r: 4, color: Green, droplines: {vertical: }, opacity: params.opss}
+        - Point: {coordinates: [3,params.p], r: 4, color: Green, droplines: {vertical: }, opacity: params.opss}
+        - Point: {coordinates: [4,params.p], r: 4, color: Green, droplines: {vertical: }, opacity: params.opss}
+        - Point: {coordinates: [5,params.p], r: 4, color: Green, droplines: {vertical: }, opacity: params.opss}
+        - Point: {coordinates: [6,params.p], r: 4, color: Green, droplines: {vertical: }, opacity: params.opss}
+        - Point: {coordinates: [7,params.p], r: 4, color: Green, droplines: {vertical: }, opacity: params.opss}
+
+        - Point: {coordinates: [1,params.p], r: 5, color: Green, show: params.x > 0}
+        - Point: {coordinates: [2,params.p], r: 5, color: Green, show: params.x > 1}
+        - Point: {coordinates: [3,params.p], r: 5, color: Green, show: params.x > 2}
+        - Point: {coordinates: [4,params.p], r: 5, color: Green, show: params.x > 3}
+        - Point: {coordinates: [5,params.p], r: 5, color: Green, show: params.x > 4}
+        - Point: {coordinates: [6,params.p], r: 5, color: Green, show: params.x > 5}
+        - Point: {coordinates: [7,params.p], r: 5, color: Green, show: params.x > 6}
+        - Point: {coordinates: [8,params.p], r: 5, color: Green, show: params.x > 7}
+
+# marginal cost
+        - Point: {coordinates: [1,params.mc1], r: 4, color: Red, droplines: {horizontal: params.mc1, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [2,params.mc2], r: 4, color: Red, droplines: {horizontal: params.mc2, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [3,params.mc3], r: 4, color: Red, droplines: {horizontal: params.mc3, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [4,params.mc4], r: 4, color: Red, droplines: {horizontal: params.mc4, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [5,params.mc5], r: 4, color: Red, droplines: {horizontal: params.mc5, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [6,params.mc6], r: 4, color: Red, droplines: {horizontal: params.mc6, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [7,params.mc7], r: 4, color: Red, droplines: {horizontal: params.mc7, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [8,params.mc8], r: 4, color: Red, droplines: {horizontal: params.mc8, vertical: }, opacity: params.opss}
+
+        - Point: {coordinates: [1.07,params.mc1], r: 5, color: Red, show: params.x > 0}
+        - Point: {coordinates: [2,params.mc2], r: 5, color: Red, show: params.x > 1}
+        - Point: {coordinates: [3,params.mc3], r: 5, color: Red, show: params.x > 2}
+        - Point: {coordinates: [4,params.mc4], r: 5, color: Red, show: params.x > 3}
+        - Point: {coordinates: [5,params.mc5], r: 5, color: Red, show: params.x > 4}
+        - Point: {coordinates: [6,params.mc6], r: 5, color: Red, show: params.x > 5}
+        - Point: {coordinates: [7,params.mc7], r: 5, color: Red, show: params.x > 6}
+        - Point: {coordinates: [8,params.mc8], r: 5, color: Red, show: params.x > 7}
+
+# average variable cost
+        - Point: {coordinates: [1,params.avc1], r: 4, color: Orange, droplines: {horizontal: params.avc1, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [2,params.avc2], r: 4, color: Orange, droplines: {horizontal: params.avc2, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [3,params.avc3], r: 4, color: Orange, droplines: {horizontal: params.avc3, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [4,params.avc4], r: 4, color: Orange, droplines: {horizontal: params.avc4, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [5,params.avc5], r: 4, color: Orange, droplines: {horizontal: params.avc5, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [6,params.avc6], r: 4, color: Orange, droplines: {horizontal: params.avc6, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [7,params.avc7], r: 4, color: Orange, droplines: {horizontal: params.avc7, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [8,params.avc8], r: 4, color: Orange, droplines: {horizontal: params.avc8, vertical: }, opacity: params.opss}
+
+        - Point: {coordinates: [0.93,params.avc1], r: 5, color: Orange, show: params.x > 0}
+        - Point: {coordinates: [2,params.avc2], r: 5, color: Orange, show: params.x > 1}
+        - Point: {coordinates: [3,params.avc3], r: 5, color: Orange, show: params.x > 2}
+        - Point: {coordinates: [4,params.avc4], r: 5, color: Orange, show: params.x > 3}
+        - Point: {coordinates: [5,params.avc5], r: 5, color: Orange, show: params.x > 4}
+        - Point: {coordinates: [6,params.avc6], r: 5, color: Orange, show: params.x > 5}
+        - Point: {coordinates: [7,params.avc7], r: 5, color: Orange, show: params.x > 6}
+        - Point: {coordinates: [8,params.avc8], r: 5, color: Orange, show: params.x > 7}
+
+# cost and profits in terms of MC
+        - Area: {fn1: params.mc1, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 1, show: params.x > 0 && params.show == 1}
+        - Area: {fn1: params.mc2, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 1, max: 2, show: params.x > 1 && params.show == 1}
+        - Area: {fn1: params.mc3, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 2, max: 3, show: params.x > 2 && params.show == 1}
+        - Area: {fn1: params.mc4, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 3, max: 4, show: params.x > 3 && params.show == 1}
+        - Area: {fn1: params.mc5, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 4, max: 5, show: params.x > 4 && params.show == 1}
+        - Area: {fn1: params.mc6, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 5, max: 6, show: params.x > 5 && params.show == 1}
+        - Area: {fn1: params.mc7, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 6, max: 7, show: params.x > 6 && params.show == 1}
+        - Area: {fn1: params.mc8, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 7, max: 8, show: params.x > 7 && params.show == 1}
+
+        - Area: {fn1: params.p, fn2: params.mc1, fill: GreenYellow, opacity: params.opps, min: 0, max: 1, show: params.x > 0 && params.show == 1}
+        - Area: {fn1: params.p, fn2: params.mc2, fill: GreenYellow, opacity: params.opps, min: 1, max: 2, show: params.x > 1 && params.show == 1}
+        - Area: {fn1: params.p, fn2: params.mc3, fill: GreenYellow, opacity: params.opps, min: 2, max: 3, show: params.x > 2 && params.show == 1}
+        - Area: {fn1: params.p, fn2: params.mc4, fill: GreenYellow, opacity: params.opps, min: 3, max: 4, show: params.x > 3 && params.show == 1}
+        - Area: {fn1: params.p, fn2: params.mc5, fill: GreenYellow, opacity: params.opps, min: 4, max: 5, show: params.x > 4 && params.show == 1}
+        - Area: {fn1: params.p, fn2: params.mc6, fill: GreenYellow, opacity: params.opps, min: 5, max: 6, show: params.x > 5 && params.show == 1}
+        - Area: {fn1: params.p, fn2: params.mc7, fill: GreenYellow, opacity: params.opps, min: 6, max: 7, show: params.x > 6 && params.show == 1}
+        - Area: {fn1: params.p, fn2: params.mc8, fill: GreenYellow, opacity: params.opps, min: 7, max: 8, show: params.x > 7 && params.show == 1}
+
+        - Area: {fn1: params.p, fn2: params.mc1, fill: Brown, opacity: params.opss, min: 0, max: 1, show: params.x > 0 && params.show == 1 && params.p < params.mc1}
+        - Area: {fn1: params.p, fn2: params.mc2, fill: Brown, opacity: params.opss, min: 1, max: 2, show: params.x > 1 && params.show == 1 && params.p < params.mc2}
+        - Area: {fn1: params.p, fn2: params.mc3, fill: Brown, opacity: params.opss, min: 2, max: 3, show: params.x > 2 && params.show == 1 && params.p < params.mc3}
+        - Area: {fn1: params.p, fn2: params.mc4, fill: Brown, opacity: params.opss, min: 3, max: 4, show: params.x > 3 && params.show == 1 && params.p < params.mc4}
+        - Area: {fn1: params.p, fn2: params.mc5, fill: Brown, opacity: params.opss, min: 4, max: 5, show: params.x > 4 && params.show == 1 && params.p < params.mc5}
+        - Area: {fn1: params.p, fn2: params.mc6, fill: Brown, opacity: params.opss, min: 5, max: 6, show: params.x > 5 && params.show == 1 && params.p < params.mc6}
+        - Area: {fn1: params.p, fn2: params.mc7, fill: Brown, opacity: params.opss, min: 6, max: 7, show: params.x > 6 && params.show == 1 && params.p < params.mc7}
+        - Area: {fn1: params.p, fn2: params.mc8, fill: Brown, opacity: params.opss, min: 7, max: 8, show: params.x > 7 && params.show == 1 && params.p < params.mc8}
+
+# cost and profits in terms of AVC
+        - Area: {fn1: params.avc1, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 1, show: params.x == 1 && params.show == 2}
+        - Area: {fn1: params.avc2, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 2, show: params.x == 2 && params.show == 2}
+        - Area: {fn1: params.avc3, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 3, show: params.x == 3 && params.show == 2}
+        - Area: {fn1: params.avc4, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 4, show: params.x == 4 && params.show == 2}
+        - Area: {fn1: params.avc5, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 5, show: params.x == 5 && params.show == 2}
+        - Area: {fn1: params.avc6, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 6, show: params.x == 6 && params.show == 2}
+        - Area: {fn1: params.avc7, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 7, show: params.x == 7 && params.show == 2}
+        - Area: {fn1: params.avc8, fn2: 0 - 0, fill: Red, opacity: params.ops, min: 0, max: 8, show: params.x == 8 && params.show == 2}
+
+        - Area: {fn1: params.p, fn2: params.avc1, fill: GreenYellow, opacity: params.opps, min: 0, max: 1, show: params.x == 1 && params.show == 2}
+        - Area: {fn1: params.p, fn2: params.avc2, fill: GreenYellow, opacity: params.opps, min: 0, max: 2, show: params.x == 2 && params.show == 2}
+        - Area: {fn1: params.p, fn2: params.avc3, fill: GreenYellow, opacity: params.opps, min: 0, max: 3, show: params.x == 3 && params.show == 2}
+        - Area: {fn1: params.p, fn2: params.avc4, fill: GreenYellow, opacity: params.opps, min: 0, max: 4, show: params.x == 4 && params.show == 2}
+        - Area: {fn1: params.p, fn2: params.avc5, fill: GreenYellow, opacity: params.opps, min: 0, max: 5, show: params.x == 5 && params.show == 2}
+        - Area: {fn1: params.p, fn2: params.avc6, fill: GreenYellow, opacity: params.opps, min: 0, max: 6, show: params.x == 6 && params.show == 2}
+        - Area: {fn1: params.p, fn2: params.avc7, fill: GreenYellow, opacity: params.opps, min: 0, max: 7, show: params.x == 7 && params.show == 2}
+        - Area: {fn1: params.p, fn2: params.avc8, fill: GreenYellow, opacity: params.opps, min: 0, max: 8, show: params.x == 8 && params.show == 2}
+
+        - Area: {fn1: params.p, fn2: params.avc1, fill: Brown, opacity: params.opss, min: 0, max: 1, show: params.x == 1 && params.show == 2 && params.p < params.avc1}
+        - Area: {fn1: params.p, fn2: params.avc2, fill: Brown, opacity: params.opss, min: 0, max: 2, show: params.x == 2 && params.show == 2 && params.p < params.avc2}
+        - Area: {fn1: params.p, fn2: params.avc3, fill: Brown, opacity: params.opss, min: 0, max: 3, show: params.x == 3 && params.show == 2 && params.p < params.avc3}
+        - Area: {fn1: params.p, fn2: params.avc4, fill: Brown, opacity: params.opss, min: 0, max: 4, show: params.x == 4 && params.show == 2 && params.p < params.avc4}
+        - Area: {fn1: params.p, fn2: params.avc5, fill: Brown, opacity: params.opss, min: 0, max: 5, show: params.x == 5 && params.show == 2 && params.p < params.avc5}
+        - Area: {fn1: params.p, fn2: params.avc6, fill: Brown, opacity: params.opss, min: 0, max: 6, show: params.x == 6 && params.show == 2 && params.p < params.avc6}
+        - Area: {fn1: params.p, fn2: params.avc7, fill: Brown, opacity: params.opss, min: 0, max: 7, show: params.x == 7 && params.show == 2 && params.p < params.avc7}
+        - Area: {fn1: params.p, fn2: params.avc8, fill: Brown, opacity: params.opss, min: 0, max: 8, show: params.x == 8 && params.show == 2 && params.p < params.avc8}
+
+    sidebar:
+      controls:
+      - title: title
+        description: description 
+        sliders:
+        - param: x
+          label: X
+        - param: p
+          label: P
+        radioGroup:
+          param: show
+          options:
+            - Non mostrare costi/profitti
+            - Mostra costi/profitti marginali
+            - Mostra costi/profitti medi
+        divs:
+          - html: "`    `"
+          - html: "`    `"
+          - html: "`    `"
+          - html: "` Produrre ${params.x} unità non massimizza il profitto dell'impresa. Infatti il costo marginale dell'ultima unità
+               prodotta (${6 * (params.x)}) è maggiore del suo ricavo marginale (${params.p}). Riducendo la produzione di una
+               unità, il profitto aumenterebbe di  $ ${6 * (params.x)} - ${params.p} = ${6 * (params.x) - params.p}$ euro.  `"
+            show: ( params.p < 6 * (params.x) )
+          - html: "` Produrre ${params.x} unità non massimizza il profitto dell'impresa. Infatti il costo marginale di una unità
+               aggiuntiva (${6 * ((params.x)+1)}) è minore del suo ricavo marginale (${params.p}). Aumentando la produzione di una
+               unità, il profitto aumenterebbe di  $  ${params.p} - ${6 * ((params.x)+1)} = ${params.p - 6 * ((params.x)+1)}$ euro.  `"
+            show: ( params.p > 6 * ((params.x)+1) )
+          - html: "` Produrre ${params.x} unità massimizza il profitto dell'impresa. Infatti il costo marginale dell'ultima unità
+               prodotta (${6 * (params.x)}) non è maggiore del suo ricavo marginale (${params.p}) mentre il costo marginale di una unità
+               aggiuntiva (${6 * ((params.x)+1)}) non è minore del suo ricavo marginale (${params.p}). L'impresa non può aumentare
+               il profitto aumentando o riducendo la quantità prodotta. `"
+            show: ( params.p >= 6 * (params.x) ) && ( params.p <= 6 * ((params.x)+1) )
+
+    explanation:
+      divs:
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+        - html: "` Al livello di produzione $X=${params.x}$ il ricavo totale (somma delle aree verde e rossa) è
+                pari a $ ${calcs.tr} $. Il costo variabile (area rossa) è pari a $ ${calcs.vc} $.
+                Il profitto economico di breve periodo (area verde) è quindi pari a $ ${calcs.profit} $.   `"
+          show: ( params.x > 0 ) && ( params.p >= 6 * (params.x) ) && ( params.show == 1 )
+        - html: "` Al livello di produzione $X=${params.x}$ il ricavo totale (somma delle aree verde e rossa) è
+                pari a $ ${calcs.tr} $. Il costo variabile (somma delle area rossa e marrone) è pari a $ ${calcs.vc} $.
+                Il profitto economico di breve periodo (differenza tra area verde e area marrone) è quindi pari a $ ${calcs.profit} $.   `"
+          show: ( params.x > 0 ) && ( params.p < 6 * (params.x) ) && ( params.show == 1 )
+        - html: "` Al livello di produzione $X=${params.x}$ il ricavo totale (somma delle aree verde e rossa) è
+                pari a $ ${calcs.tr} $. Il costo variabile (area rossa) è pari a $ ${calcs.vc} $.
+                Il profitto economico di breve periodo (area verde) è quindi pari a $ ${calcs.profit} $.   `"
+          show: ( params.x > 0 ) && ( params.p > calcs.avc ) && ( params.show == 2 )
+        - html: "` Al livello di produzione $X=${params.x}$ il ricavo totale (area rossa) è
+                pari a $ ${calcs.tr} $. Il costo variabile (somma delle aree rossa e marrone) è pari a $ ${calcs.vc} $.
+                Il profitto economico di breve periodo (negativo dell'area marrone) è quindi pari a $ ${calcs.profit} $.   `"
+          show: ( params.x > 0 ) && ( params.p < calcs.avc ) && ( params.show == 2 )
+        - html: "` Al livello di produzione $X=${params.x}$ il ricavo totale (area rossa) è
+                pari a $ ${calcs.tr} $. Il costo variabile (area rossa) è pari a $ ${calcs.vc} $.
+                Il profitto economico di breve periodo è quindi pari a $ ${calcs.profit} $.   `"
+          show: ( params.x > 0 ) && ( params.p == calcs.avc ) && ( params.show == 2 )
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+
+
+
+
+
+
+

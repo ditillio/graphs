@@ -1,0 +1,102 @@
+params:
+- {name: p, value: 6}
+- {name: p2, value: 8, min: 2, max: 10, round: 2}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+
+- {name: a, value: 0.5, min: 0.05, max: 0.95, round: 0.05}
+- {name: M, value: 20, min: 10, max: 30}
+
+calcs:
+  dem: (12-(params.p))
+  dem2: (12-(params.p2))
+  v: ((12-params.p)^2)/2 + 18
+  v2: ((12-params.p2)^2)/2 + 18
+
+aspectRatio: 1.5
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        min: -0.7
+        max: 0.7  
+        ticks: 5
+      yAxis:
+        min: -7
+        max: 7
+        ticks: 5
+
+      objects:
+
+        - Label:
+            coordinates: [0.65, 0.3]
+            text: "` \\\\text{\\\\% variazione} `"
+            position: l
+
+        - Label:
+            coordinates: [0.65, -0.2]
+            text: "` \\\\text{prezzo bene 1} `"
+            position: l
+
+        - Label:
+            coordinates: [0, 7]
+            text: "` \\\\text{euro}  `"
+            xPixelOffset: 0
+
+# CV
+        - Curve:
+            fn: (-1) * (params.M) * ( (1+(x))^(params.a) - 1 )
+            color: Blue
+            strokeWidth: 1.5
+            label:
+              text: CV
+              x: 0.7
+              position: tl
+
+# EV
+        - Curve:
+            fn: (-1) * (params.M) * ( 1 - (1+(x))^(-(params.a)) )
+            color: Red
+            strokeWidth: 1.5
+            label:
+              text: EV
+              x: 0.7
+              position: bl
+
+# 𝛥CS
+        - Curve:
+            fn: (-1) * (params.M) * (params.a) * log( 1 + (x) )
+            color: Darkgreen
+            strokeWidth: 1.5
+            label:
+              text: "` \\\\Delta CS `"
+              x: 0.69
+              position: l
+
+
+# # Optimum points
+#         - Point: {coordinates: [params.p,calcs.v], color: Blue, droplines: {vertical: P_1, horizontal: calcs.v+500}}
+#         - Point: {coordinates: [params.p2,calcs.v2], color: Blue, droplines: {vertical: P^\prime_1, horizontal: calcs.v2+500}, show: params.p2 !== params.p}
+
+
+    sidebar:
+      controls:
+      - title: Variazione compensativa, variazione equivalente, e variazione di surplus
+        sliders:
+        - param: a
+          label: a
+        - param: M
+          label: M
+        divs:
+          - html: "`
+            Bla bla Bla bla Bla bla Bla bla Bla bla Bla bla Bla bla Bla bla Bla bla 
+            Bla bla Bla bla Bla bla Bla bla Bla bla Bla bla Bla bla Bla bla Bla bla  
+            `"
+
+    explanation:
+      divs:
+        - html: "`  `"
+

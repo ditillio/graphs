@@ -1,0 +1,135 @@
+params:
+- {name: p, value: 6}
+- {name: p2, value: 8, min: 2, max: 10, round: 2}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+
+calcs:
+  dem: (12-(params.p))
+  dem2: (12-(params.p2))
+  v: ((12-params.p)^2)/2 + 18
+  v2: ((12-params.p2)^2)/2 + 18
+
+aspectRatio: 0.7
+
+layout:
+  TwoVerticalGraphsPlusSidebar:
+
+    topGraph: 
+      xAxis:
+        max: 13
+        ticks: 5
+      yAxis:
+        max: 100
+        ticks: 0
+
+      objects:
+
+        - Label:
+            coordinates: [13, 0]
+            text: "` \\\\text{eur} / \\\\text{kg} `"
+            yPixelOffset: 0
+            position: l
+        - Label:
+            coordinates: [0, 100]
+            text: "` \\\\text{utilità (eur)}  `"
+            xPixelOffset: 0
+
+# indirect utility
+        - Curve:
+            fn: 90-12*(x)+0.5*(x)^2
+            color: Blue
+            strokeWidth: 1.5
+            max: 12
+            label:
+              text: V
+              x: 11
+              position: bl
+
+# Surplus variation
+        - Arrow:
+            begin: [1.3,calcs.v]
+            end: [1.3,calcs.v2]
+            color: Red
+            show: params.p2 > params.p
+        - Arrow:
+            begin: [params.p,10]
+            end: [params.p2,10]
+            color: Blue
+            show: params.p2 > params.p
+        - Arrow:
+            begin: [0.8,calcs.v]
+            end: [0.8,calcs.v2]
+            color: Green
+            show: params.p2 < params.p
+        - Arrow:
+            begin: [params.p,10]
+            end: [params.p2,10]
+            color: Blue
+            show: params.p2 < params.p
+
+
+# Optimum points
+        - Point: {coordinates: [params.p,calcs.v], color: Blue, droplines: {vertical: P_1, horizontal: calcs.v+500}}
+        - Point: {coordinates: [params.p2,calcs.v2], color: Blue, droplines: {vertical: P^\prime_1, horizontal: calcs.v2+500}, show: params.p2 !== params.p}
+
+
+    bottomGraph: 
+      xAxis:
+        max: 13
+        ticks: 5
+      yAxis:
+        max: 1
+        min: -13
+        ticks: 5
+
+      objects:
+
+        - Label:
+            coordinates: [13, 0]
+            text: "` \\\\text{eur} / \\\\text{kg} `"
+            yPixelOffset: 0
+            position: l
+        - Label:
+            coordinates: [0, -13]
+            text: "` - \\\\text{kg}  `"
+            xPixelOffset: 0
+
+
+# WTP and surplus variation
+        - Curve:
+            fn: -12+(x)
+            color: Blue
+            max: 12
+            strokeWidth: 1.5
+            label:
+              text: MV_1
+              x: 10
+              position: tl
+
+        - Area: {fn1: 0.0000001*(x), fn2: -12+(x), fill: Red, opacity: params.ops, min: params.p, 
+                        max: params.p2, show: params.p2 > params.p}
+        - Area: {fn1: 0.0000001*(x), fn2: -12+(x), fill: Green, opacity: params.ops, min: params.p, 
+                        max: params.p2, show: params.p2 < params.p}
+
+# Optimum points
+        - Point: {coordinates: [params.p, params.p-12 ], color: Blue, droplines: {vertical: , horizontal: -calcs.dem }}
+        - Point: {coordinates: [params.p2, params.p2-12 ], color: Blue, droplines: {vertical: , horizontal: -calcs.dem2}, show: params.p2 !== params.p}
+
+    sidebar:
+      controls:
+      - title: Variazioni di surplus
+        sliders:
+        - param: p2
+          label: P^\prime_1
+        divs:
+          - html: "` Quando il prezzo del bene aumenta da $P_1=${params.p}$ a $P^\\\\prime_1=${params.p2}$ la quantità domandata del bene scende 
+          da $X_1=${calcs.dem}$ a $X^\\\\prime_1=${calcs.dem2}$. La riduzione di utilità indiretta è pari alla lunghezza della freccia rossa nel
+           grafico di sopra. Dato che l'utilità indiretta marginale è pari al negativo della quantità domandata $MV_1=-X_1$ ...   `"
+            show: (params.p2 > params.p) 
+
+    explanation:
+      divs:
+        - html: "`  `"
+

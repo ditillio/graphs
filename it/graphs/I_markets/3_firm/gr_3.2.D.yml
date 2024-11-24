@@ -1,0 +1,338 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: p, value: 20, min: 0, max: 25}
+- {name: fc, value: 200}
+- {name: n, value: 3, min: 3, max: 50}
+
+calcs:
+  xopt: max( (params.p-4)*4, 0 )
+  tr: params.p * calcs.xopt
+  vc: (calcs.xopt)^(2) / 8 + 4 * (calcs.xopt)
+  tc: calcs.vc + (params.fc)
+  econprofit: calcs.tr - calcs.vc
+  accprofit: calcs.tr - calcs.tc
+  mc: calcs.xopt / 4 + 4
+  avc: (calcs.xopt) / 8 + 4
+  atc: calcs.xopt / 8 + (params.fc) / calcs.xopt + 4
+  cazz: max(calcs.mc,calcs.atc)
+
+aspectRatio: 2
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+
+    leftGraph: 
+      xAxis:
+        max: 300
+        min: -3
+        ticks: 4
+        title: Breve periodo
+      yAxis:
+        max: 28
+        ticks: 10
+      label: a
+
+      objects:
+
+        - Label:
+                coordinates: [300, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 28]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# points
+        - Point:
+            coordinates: [calcs.xopt*3, params.p]
+            color: Red
+            r: 5
+            droplines:
+              vertical: calcs.xopt*3
+
+        - Point:
+            coordinates: [0, 4]
+            color: Red
+            r: 0
+            droplines:
+              horizontal: 4
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 0.5
+            drag:
+              - vertical: p
+
+# individual supply curve
+
+        - Curve:
+            fn: max( 0, 3*(4 * (y) - 16) )
+            ind: y
+            color: Red
+            label:
+              text: S_{SR}
+              y: 27
+              position: bl
+            strokeWidth: 3
+
+    rightGraph: 
+      xAxis:
+        min: -5
+        max: 800
+        ticks: 3
+        title: Lungo periodo (aumentare $N$)
+      yAxis:
+        max: 28
+        ticks: 10
+
+      objects:
+
+        - Label:
+                coordinates: [800, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 28]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# points
+        - Point:
+            coordinates: [0, params.p]
+            color: Red
+            r: 5
+            show: params.p < 14
+        - Point:
+            coordinates: [(params.n)*(calcs.xopt), params.p]
+            color: Red
+            r: 5
+            droplines:
+              vertical: (params.n)*(calcs.xopt)
+            show: params.p > 14
+
+        - Point:
+            coordinates: [0, 14]
+            color: Red
+            r: 3
+            show: params.p !== 14
+        - Point:
+            coordinates: [40, 14]
+            color: Red
+            r: 3
+            show: params.p !== 14
+        - Point:
+            coordinates: [80, 14]
+            color: Red
+            r: 3
+            show: params.p !== 14
+        - Point:
+            coordinates: [120, 14]
+            color: Red
+            r: 3
+            show: params.p !== 14
+        - Point:
+            coordinates: [160, 14]
+            color: Red
+            r: 3
+            show: params.n > 3 && params.p !== 14
+        - Point:
+            coordinates: [200, 14]
+            color: Red
+            r: 3
+            show: params.n > 4 && params.p !== 14
+        - Point:
+            coordinates: [240, 14]
+            color: Red
+            r: 3
+            show: params.n > 5 && params.p !== 14
+        - Point:
+            coordinates: [280, 14]
+            color: Red
+            r: 3
+            show: params.n > 6 && params.p !== 14
+        - Point:
+            coordinates: [320, 14]
+            color: Red
+            r: 3
+            show: params.n > 7 && params.p !== 14
+        - Point:
+            coordinates: [360, 14]
+            color: Red
+            r: 3
+            show: params.n > 8 && params.p !== 14
+        - Point:
+            coordinates: [400, 14]
+            color: Red
+            r: 3
+            show: params.n > 9 && params.p !== 14
+        - Point:
+            coordinates: [440, 14]
+            color: Red
+            r: 3
+            show: params.n > 10 && params.p !== 14
+        - Point:
+            coordinates: [480, 14]
+            color: Red
+            r: 3
+            show: params.n > 11 && params.p !== 14
+        - Point:
+            coordinates: [520, 14]
+            color: Red
+            r: 3
+            show: params.n > 12 && params.p !== 14
+        - Point:
+            coordinates: [560, 14]
+            color: Red
+            r: 3
+            show: params.n > 13 && params.p !== 14
+        - Point:
+            coordinates: [600, 14]
+            color: Red
+            r: 3
+            show: params.n > 14 && params.p !== 14
+        - Point:
+            coordinates: [640, 14]
+            color: Red
+            r: 3
+            show: params.n > 15 && params.p !== 14
+        - Point:
+            coordinates: [680, 14]
+            color: Red
+            r: 3
+            show: params.n > 16 && params.p !== 14
+        - Point:
+            coordinates: [720, 14]
+            color: Red
+            r: 3
+            show: params.n > 17 && params.p !== 14
+        - Point:
+            coordinates: [760, 14]
+            color: Red
+            r: 3
+            show: params.n > 18 && params.p !== 14
+        - Point:
+            coordinates: [800, 14]
+            color: Red
+            r: 3
+            show: params.n > 19 && params.p !== 14
+
+        - Points:
+            coordinates: [[0,14],[40,14],[80,14],[120,14]]
+            color: Red
+            r: 4.5
+            show: params.p == 14
+
+        - Point: {coordinates: [160,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 3}
+        - Point: {coordinates: [200,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 4}
+        - Point: {coordinates: [240,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 5}
+        - Point: {coordinates: [280,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 6}
+        - Point: {coordinates: [320,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 7}
+        - Point: {coordinates: [360,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 8}
+        - Point: {coordinates: [400,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 9}
+        - Point: {coordinates: [440,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 10}
+        - Point: {coordinates: [480,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 11}
+        - Point: {coordinates: [520,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 12}
+        - Point: {coordinates: [560,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 13}
+        - Point: {coordinates: [600,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 14}
+        - Point: {coordinates: [640,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 15}
+        - Point: {coordinates: [680,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 16}
+        - Point: {coordinates: [720,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 17}
+        - Point: {coordinates: [760,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 18}
+        - Point: {coordinates: [800,14], color: Red, r: 4.5, show: params.p == 14 && params.n > 19}
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 0.5
+            drag:
+              - vertical: p
+
+# LR supply curve
+
+        - Curve:
+            fn: max( 0, params.n * ( 4 * (y) - 16 ) )
+            ind: y
+            min: 14
+            color: Red
+            label:
+              text: S_{LR}
+              y: 27
+              position: bl
+            strokeWidth: 4
+        - Segment:
+            a: [-5,0]
+            b: [-5,14]
+            color: Red
+            strokeWidth: 8
+
+    sidebar:
+      controls:
+      - title: Offerta di mercato di breve e di lungo periodo
+        sliders:
+        - param: p
+          label: P
+        - param: n
+          label: N
+        divs:
+        - html: "` Quando $P = ${params.p}$ la scelta ottima della singola impresa, sia nel breve che nel lungo
+                  periodo, è produrre ${calcs.xopt.toFixed(0)} unità.  `"
+          show: (params.p > 14)
+        - html: "` Quando $P = ${params.p}$ la scelta ottima di breve periodo dell'impresa è produrre ${calcs.xopt.toFixed(0)} unità.
+                    Nel lungo periodo (se il prezzo rimane $P=${params.p}$) l'impresa è invece indifferente tra rimanere nel mercato
+                    (e produrre ${calcs.xopt.toFixed(0)} unità) e uscire dal mercato (produrre zero unità).  `"
+          show: (params.p == 14)
+        - html: "` Quando $P = ${params.p}$ la scelta ottima di breve periodo dell'impresa è produrre ${calcs.xopt.toFixed(0)} unità.
+                    La scelta ottima di lungo periodo (se il prezzo rimane $P=${params.p}$) è invece uscire dal mercato
+                    (produrre zero unità).  `"
+          show: (params.p < 14)
+
+
+    explanation:
+      divs:
+        - html: "`   `"
+          show: params.p !== 0
+        - html: "`   `"
+          show: params.p !== 0
+        - html: "`   `"
+          show: params.p !== 0
+        - html: "`   `"
+          show: params.p !== 0
+        - html: "` Dato che $ATC_{\\\\text{min}}=14$, quando $P=${params.p}$ ogni impresa presente nel mercato rimane nel
+                  mercato (e produce ${calcs.xopt} unità). Le (potenzialmente infinite) imprese non ancora presenti sul mercato
+                  hanno un incentivo a entrare e la quantità offerta sul mercato è quindi potenzialmente infinita 
+                  (aumemtare $N$ per vedere questo). `"
+          show: params.p > 14
+        - html: "` Dato che $ATC_{\\\\text{min}}=14$, quando $P=${params.p}$ ogni impresa presente nel mercato è 
+                  indifferente tra rimanere nel mercato (e produrre 40 unità) e uscire dal mercato. Le (potenzialmente infinite) 
+                  imprese non ancora presenti sul mercato sono indifferenti tra entrare nel mercato (e produrre 40 unità) e 
+                  rimanere fuori. La quantità offerta sul mercato è un qualunque multiplo di 40 (aumemtare $N$ per vedere questo). `"
+          show: params.p == 14
+        - html: "` Dato che $ATC_{\\\\text{min}}=14$, quando $P=${params.p}$ ogni impresa presente sul mercato nel lungo periodo 
+                  decide di uscire. Le imprese non ancora presenti sul mercato
+                  non hanno un incentivo a entrare. La quantità offerta sul mercato nel lungo periodo è quindi zero. `"
+          show: params.p < 14
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`   `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+        - html: "`  `"
+          show: params.x == 0
+
+

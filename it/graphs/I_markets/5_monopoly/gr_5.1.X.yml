@@ -1,0 +1,137 @@
+params:
+- {name: showCS, value: false}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: opss, value: 0.3}
+- {name: mc1, value: 2.50}
+- {name: mc2, value: 7.50}
+- {name: mc3, value: 12.50}
+- {name: mc4, value: 17.50}
+- {name: mc5, value: 22.50}
+- {name: mc6, value: 27.50}
+- {name: mc7, value: 32.50}
+- {name: mc8, value: 37.50}
+- {name: mc9, value: 42.50}
+- {name: mr1, value: 55.00}
+- {name: mr2, value: 45.00}
+- {name: mr3, value: 35.00}
+- {name: mr4, value: 25.00}
+- {name: mr5, value: 15.00}
+- {name: mr6, value: 5.00}
+- {name: mr7, value: -5.00}
+- {name: mr8, value: -15.00}
+- {name: mr9, value: -25.00}
+- {name: p1, value: 55.00}
+- {name: p2, value: 50.00}
+- {name: p3, value: 45.00}
+- {name: p4, value: 40.00}
+- {name: p5, value: 35.00}
+- {name: p6, value: 30.00}
+- {name: p7, value: 25.00}
+- {name: p8, value: 20.00}
+- {name: p9, value: 15.00}
+
+
+- {name: x, value: 0, min: 0, max: 9}
+
+calcs:
+  profit: params.x
+
+layout:
+  OneGraphPlusSidebar:
+
+    graph: 
+      xAxis:
+        max: 9.9
+        ticks: 9
+      yAxis:
+        max: 60
+        min: -25
+        ticks: 0
+
+      objects:
+
+        - Label:
+                coordinates: [9.5, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 60]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# marginal cost
+        - Point: {coordinates: [1,params.mc1], r: 4, color: Red, droplines: {horizontal: params.mc1, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [2,params.mc2], r: 4, color: Red, droplines: {horizontal: params.mc2, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [3,params.mc3], r: 4, color: Red, droplines: {horizontal: params.mc3, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [4,params.mc4], r: 4, color: Red, droplines: {horizontal: params.mc4, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [5,params.mc5], r: 4, color: Red, droplines: {horizontal: params.mc5, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [6,params.mc6], r: 4, color: Red, droplines: {horizontal: params.mc6, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [7,params.mc7], r: 4, color: Red, droplines: {horizontal: params.mc7, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [8,params.mc8], r: 4, color: Red, droplines: {horizontal: params.mc8, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [9,params.mc9], r: 4, color: Red, droplines: {horizontal: params.mc9, vertical: }, opacity: params.opss}
+
+        - Point: {coordinates: [1,params.mc1], r: 4, color: Red, droplines: {horizontal: params.mc1, vertical: }, show: params.x > 0}
+        - Point: {coordinates: [2,params.mc2], r: 4, color: Red, droplines: {horizontal: params.mc2, vertical: }, show: params.x > 1}
+        - Point: {coordinates: [3,params.mc3], r: 4, color: Red, droplines: {horizontal: params.mc3, vertical: }, show: params.x > 2}
+        - Point: {coordinates: [4,params.mc4], r: 4, color: Red, droplines: {horizontal: params.mc4, vertical: }, show: params.x > 3}
+        - Point: {coordinates: [5,params.mc5], r: 4, color: Red, droplines: {horizontal: params.mc5, vertical: }, show: params.x > 4}
+        - Point: {coordinates: [6,params.mc6], r: 4, color: Red, droplines: {horizontal: params.mc6, vertical: }, show: params.x > 5}
+        - Point: {coordinates: [7,params.mc7], r: 4, color: Red, droplines: {horizontal: params.mc7, vertical: }, show: params.x > 6}
+        - Point: {coordinates: [8,params.mc8], r: 4, color: Red, droplines: {horizontal: params.mc8, vertical: }, show: params.x > 7}
+        - Point: {coordinates: [9,params.mc9], r: 4, color: Red, droplines: {horizontal: params.mc9, vertical: }, show: params.x > 8}
+
+# marginal revenue
+        - Point: {coordinates: [1,params.mr1], r: 4, color: Green, droplines: {horizontal: params.mr1, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [2,params.mr2], r: 4, color: Green, droplines: {horizontal: params.mr2, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [3,params.mr3], r: 4, color: Green, droplines: {horizontal: params.mr3, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [4,params.mr4], r: 4, color: Green, droplines: {horizontal: params.mr4, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [5,params.mr5], r: 4, color: Green, droplines: {horizontal: params.mr5, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [6,params.mr6], r: 4, color: Green, droplines: {horizontal: params.mr6, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [7,params.mr7], r: 4, color: Green, droplines: {horizontal: params.mr7, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [8,params.mr8], r: 4, color: Green, droplines: {horizontal: params.mr8, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [9,params.mr9], r: 4, color: Green, droplines: {horizontal: params.mr9, vertical: }, opacity: params.opss}
+
+        - Point: {coordinates: [1,params.mr1], r: 4, color: Green, droplines: {horizontal: params.mr1, vertical: }, show: params.x > 0}
+        - Point: {coordinates: [2,params.mr2], r: 4, color: Green, droplines: {horizontal: params.mr2, vertical: }, show: params.x > 1}
+        - Point: {coordinates: [3,params.mr3], r: 4, color: Green, droplines: {horizontal: params.mr3, vertical: }, show: params.x > 2}
+        - Point: {coordinates: [4,params.mr4], r: 4, color: Green, droplines: {horizontal: params.mr4, vertical: }, show: params.x > 3}
+        - Point: {coordinates: [5,params.mr5], r: 4, color: Green, droplines: {horizontal: params.mr5, vertical: }, show: params.x > 4}
+        - Point: {coordinates: [6,params.mr6], r: 4, color: Green, droplines: {horizontal: params.mr6, vertical: }, show: params.x > 5}
+        - Point: {coordinates: [7,params.mr7], r: 4, color: Green, droplines: {horizontal: params.mr7, vertical: }, show: params.x > 6}
+        - Point: {coordinates: [8,params.mr8], r: 4, color: Green, droplines: {horizontal: params.mr8, vertical: }, show: params.x > 7}
+        - Point: {coordinates: [9,params.mr9], r: 4, color: Green, droplines: {horizontal: params.mr9, vertical: }, show: params.x > 8}
+
+# price
+        - Point: {coordinates: [1,params.p1], r: 4, color: Blue, droplines: {horizontal: params.p1, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [2,params.p2], r: 4, color: Blue, droplines: {horizontal: params.p2, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [3,params.p3], r: 4, color: Blue, droplines: {horizontal: params.p3, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [4,params.p4], r: 4, color: Blue, droplines: {horizontal: params.p4, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [5,params.p5], r: 4, color: Blue, droplines: {horizontal: params.p5, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [6,params.p6], r: 4, color: Blue, droplines: {horizontal: params.p6, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [7,params.p7], r: 4, color: Blue, droplines: {horizontal: params.p7, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [8,params.p8], r: 4, color: Blue, droplines: {horizontal: params.p8, vertical: }, opacity: params.opss}
+        - Point: {coordinates: [9,params.p9], r: 4, color: Blue, droplines: {horizontal: params.p9, vertical: }, opacity: params.opss}
+
+        - Point: {coordinates: [1,params.p1], r: 4, color: Blue, droplines: {horizontal: params.p1, vertical: }, show: params.x > 0}
+        - Point: {coordinates: [2,params.p2], r: 4, color: Blue, droplines: {horizontal: params.p2, vertical: }, show: params.x > 1}
+        - Point: {coordinates: [3,params.p3], r: 4, color: Blue, droplines: {horizontal: params.p3, vertical: }, show: params.x > 2}
+        - Point: {coordinates: [4,params.p4], r: 4, color: Blue, droplines: {horizontal: params.p4, vertical: }, show: params.x > 3}
+        - Point: {coordinates: [5,params.p5], r: 4, color: Blue, droplines: {horizontal: params.p5, vertical: }, show: params.x > 4}
+        - Point: {coordinates: [6,params.p6], r: 4, color: Blue, droplines: {horizontal: params.p6, vertical: }, show: params.x > 5}
+        - Point: {coordinates: [7,params.p7], r: 4, color: Blue, droplines: {horizontal: params.p7, vertical: }, show: params.x > 6}
+        - Point: {coordinates: [8,params.p8], r: 4, color: Blue, droplines: {horizontal: params.p8, vertical: }, show: params.x > 7}
+        - Point: {coordinates: [9,params.p9], r: 4, color: Blue, droplines: {horizontal: params.p9, vertical: }, show: params.x > 8}
+
+    sidebar:
+      controls:
+      - title: Variazioni di surplus del produttore
+        sliders:
+        - param: x
+          label: X
+        divs:
+          - html: "` Quando ..  $$    `"
+            show: (params.mc1 > 0)

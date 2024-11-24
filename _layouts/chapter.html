@@ -1,0 +1,98 @@
+<!doctype html>
+{% assign path = page.path | split: '/' %}
+{% assign language = path[0] %}
+{% assign textbook = site.data.toc %}
+{% assign parts = textbook.parts | where: "folder", path[1] %}
+{% assign part = parts[0] %}
+{% assign chapters = part.chapters | where: "folder", path[2] %}
+{% assign chapter = chapters[0] %}
+{% if page.version %}
+{% assign version = page.version %}
+{% else %}
+{% assign version = "0.3.1" %}
+{% endif %}
+<html lang="en">
+<head>
+    <title>{{ chapter.title[language] }}</title>
+    {% include stylesheets.html KGversion=version bootstrap=false textbook=true %}
+    <style>
+        .subtitle {
+            padding-top: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #959595;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chapter {
+            padding: 10px;
+            font-size: 18pt;
+        }
+
+        .chapter_number {
+            font-size: 18pt;
+            padding-top: 30pt;
+        }
+
+        .chapter_title {
+            padding-top: 10pt;
+            font-size: 36pt;
+        }
+
+        .draft {
+            font-size: x-small;
+            color: lightgrey;
+            font-style: normal;
+            padding-left: 10px;
+        }
+
+        .number {
+            padding-right: 25px;
+            padding-top: 5px;
+            font-size: 12pt;
+            text-align: right;
+            float: left;
+            width: 40px;
+        }
+    </style>
+</head>
+<body>
+    {% include header.html language=language %}
+<main>
+    <article>
+        <div class="subtitle"><a href="{{ site.baseurl }}/{{ language }}">{{ textbook.title[language] }}</a></div>
+        <div class="chapter_number">
+            {% if language == 'it' %}
+            {% if chapter.appendix %}
+            Appendice {{ chapter.folder }}
+            {% else %}
+            Capitolo {{ chapter.folder }}
+            {% endif %}
+            {% else %}
+            {% if chapter.appendix %}
+            Appendix {{ chapter.folder }}
+            {% else %}
+            Chapter {{ chapter.folder }}
+            {% endif %}
+            {% endif %}
+        </div>
+        <div class="chapter_title">{{ chapter.title[language] }}</div>
+        <div style="padding: 50px">
+            {% for section in chapter.sections %}
+            <div class="chapter">
+                <span class="number">{{ chapter.folder }}.{{ forloop.index }}</span>
+                {% if section.draft %}
+                {{ section.title[language] }}<span class="draft"> COMING SOON</span>
+                {% else %}
+                <a href="./{{ forloop.index }}">{{ section.title[language] }}</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </article>
+</main>
+{% include footer.html language=language %}
+{% include scripts.html KGversion=version bootstrap=true renderMath=true %}
+</body>
+</html>

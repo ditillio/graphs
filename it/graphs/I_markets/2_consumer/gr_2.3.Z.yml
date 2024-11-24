@@ -1,0 +1,139 @@
+params:
+- {name: showCS, value: false}
+- {name: d, value: 0}
+- {name: p, value: 4.5, min: 0, max: 12}
+- {name: p1, value: 2, min: 0, max: 12}
+- {name: p2, value: 7, min: 0, max: 12}
+- {name: m, value: 100}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+
+- {name: b11, value: 11}
+- {name: b12, value: 9}
+- {name: b21, value: 7}
+- {name: b22, value: 5}
+- {name: b31, value: 3}
+- {name: b32, value: 1}
+
+
+calcs:
+  b1: ((params.b11)+(params.b12))/2
+  b2: ((params.b21)+(params.b22))/2
+  b3: ((params.b31)+(params.b32))/2
+  t11: (params.b11)/2
+  t12: (params.b11+params.b12)/2
+  t21: (params.b11+params.b12+params.b21)/2
+  t22: (params.b11+params.b12+params.b21+params.b22)/2
+  t31: (params.b11+params.b12+params.b21+params.b22+params.b31)/2
+  t32: (params.b11+params.b12+params.b21+params.b22+params.b31+params.b32)/2
+  t1: calcs.b1
+  t2: calcs.t1+calcs.b2
+  t3: calcs.t2+calcs.b3
+  cs0: max((calcs.b1)-(params.p),0)+max((calcs.b2)-(params.p),0)+max((calcs.b3)-(params.p),0)
+  cs1: (max((params.b11)-(params.p),0)+max((params.b12)-(params.p),0)+max((params.b21)-(params.p),0)
+        +max((params.b22)-(params.p),0)+max((params.b31)-(params.p),0)+max((params.b32)-(params.p),0))/2
+  dem: (12-(params.p))
+  dem1: (12-(params.p1))
+  dem2: (12-(params.p2))
+  cs2: ( -(params.p) + 12 ) * (calcs.dem)/2
+
+
+aspectRatio: 2.8
+
+layout:
+  TwoHorizontalGraphs:
+
+    leftGraph: 
+      xAxis:
+        title: Unità del bene
+        max: 13
+        ticks: 0
+      yAxis:
+        title: Euro
+        max: 13
+        ticks: 0
+
+      objects:
+
+# price lines
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1.5
+        - Line:
+            yIntercept: params.p2
+            color: Green
+            strokeWidth: 1.5
+
+# WTP and CS
+        - Curve:
+            fn: 12-(x)
+            color: Blue
+            strokeWidth: 1.5
+        - Area: {fn1: 12-(x), fn2: params.p2, fill: Blue, opacity: params.ops, min: 0, 
+                        max: calcs.dem2}
+
+# Surplus variation
+        - Area:
+            fn1: min(params.p2,(12-(x)))
+            fn2: params.p
+            fill: Red
+            opacity: 0.3
+            min: 0
+            max: calcs.dem
+
+
+# Optimum points
+        - Point: {coordinates: [calcs.dem,params.p], color: Blue, droplines: {vertical: X_1, horizontal: P_1}}
+        - Point: {coordinates: [calcs.dem2,params.p2], color: Blue, droplines: {vertical: X^\prime_1, horizontal: P^\prime_1}}
+
+
+    rightGraph: 
+      xAxis:
+        title: Unità del bene
+        max: 13
+        ticks: 0
+      yAxis:
+        title: Euro
+        max: 13
+        ticks: 0
+
+      objects:
+
+# price lines
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1.5
+        - Line:
+            yIntercept: params.p1
+            color: Green
+            strokeWidth: 1.5
+
+# WTP and CS
+        - Curve:
+            fn: 12-(x)
+            color: Blue
+            strokeWidth: 1.5
+        - Area: {fn1: 12-(x), fn2: params.p, fill: Blue, opacity: params.ops, min: 0, 
+                        max: calcs.dem}
+
+# Surplus variation
+        - Area:
+            fn1: min(params.p,(12-(x)))
+            fn2: params.p1
+            fill: Green
+            opacity: 0.3
+            min: 0
+            max: calcs.dem1
+
+
+# Optimum points
+        - Point: {coordinates: [calcs.dem,params.p], color: Blue, droplines: {vertical: X_1, horizontal: P_1}}
+        - Point: {coordinates: [calcs.dem1,params.p1], color: Blue, droplines: {vertical: X^\prime_1, horizontal: P^\prime_1}}
+
+    explanation:
+      divs:
+        - html: "`  `"
+

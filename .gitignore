@@ -1,0 +1,6 @@
+Gemfile.lock
+.DS_Store
+_site/*
+vendor/
+_site/feed.xml
+*.xml

@@ -1,0 +1,191 @@
+
+schema: EconSchema
+params:
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: opss, value: 0.3}
+- {name: p1, value: 5.49}
+- {name: p2, value: 3.99, min: 2, max: 4, round: 0.01}
+- {name: g, value: -0.5}
+- {name: aa1, value: 7}
+- {name: aa2, value: 5}
+- {name: bb1, value: 1}
+- {name: bb2, value: 1}
+- {name: x1, value: 0, min: 0, max: 4}
+- {name: x2, value: 0, min: 0, max: 4}
+- {name: dp, value: 0}
+
+calcs:
+  pr1: ( params.p1 + (2^params.dp-1)/max(params.dp,1) )
+  d: params.bb1*params.bb2-params.g^2
+  x1opt: ( params.aa1 * params.bb2 - params.g * params.aa2 - params.bb2 * params.p1 + params.g * params.p2 ) / calcs.d
+  x2opt: ( params.aa2 * params.bb1 - params.g * params.aa1 - params.bb1 * params.p2 + params.g * calcs.pr1 ) / calcs.d
+  mu1: params.aa1 - params.bb1 * params.x1 - 0.5 * params.bb1 - params.g * params.x2
+  mu2: params.aa2 - params.bb2 * params.x2 - 0.5 * params.bb2 - params.g * params.x1
+  mu1prev: params.aa1 - params.bb1 * params.x1 + 0.5 * params.bb1 - params.g * params.x2 
+  mu2prev: params.aa2 - params.bb2 * params.x2 + 0.5 * params.bb2 - params.g * params.x1
+  mup1: ( calcs.mu1 - calcs.pr1 )
+  mup2: ( calcs.mu2 - params.p2 )
+  mup1prev: ( calcs.mu1prev - calcs.pr1 )
+  mup2prev: ( calcs.mu2prev - params.p2 )
+
+#aspectRatio: 3
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+    leftGraph:
+      xAxis:
+        title: "` $ X_1 $ `"
+        ticks: 5
+        max: 4.9
+      yAxis:
+        max: 9
+        ticks: 10
+      objects:
+
+# price line X_1
+      - Line:
+            yIntercept: calcs.pr1
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P_1
+              x: 4.5
+              position: b
+
+      - Label:
+            coordinates: [4.9, 0]
+            text: "` \\\\text{pizza} `"
+            xPixelOffset: 10
+            position: m
+      - Label:
+            coordinates: [0, 9]
+            text: "` \\\\text{utilità/pizza}  `"
+            xPixelOffset: 0
+
+# marginal utility good 1
+      - Point: {coordinates: [1, params.aa1 - params.bb1 * 0 - 0.5 * params.bb1 - params.g * params.x2], droplines: {vertical: 1,horizontal: params.aa1 - params.bb1 * 0 - 0.5 * params.bb1 - params.g * params.x2}, color: Blue, opacity: params.opss}
+      - Point: {coordinates: [2, params.aa1 - params.bb1 * 1 - 0.5 * params.bb1 - params.g * params.x2], droplines: {vertical: 2,horizontal: params.aa1 - params.bb1 * 1 - 0.5 * params.bb1 - params.g * params.x2}, color: Blue, opacity: params.opss}
+      - Point: {coordinates: [3, params.aa1 - params.bb1 * 2 - 0.5 * params.bb1 - params.g * params.x2], droplines: {vertical: 3,horizontal: params.aa1 - params.bb1 * 2 - 0.5 * params.bb1 - params.g * params.x2}, color: Blue, opacity: params.opss}
+      - Point: {coordinates: [4, params.aa1 - params.bb1 * 3 - 0.5 * params.bb1 - params.g * params.x2], droplines: {vertical: 4,horizontal: params.aa1 - params.bb1 * 3 - 0.5 * params.bb1 - params.g * params.x2}, color: Blue, opacity: params.opss}
+      - Point: {coordinates: [1, params.aa1 - params.bb1 * 0 - 0.5 * params.bb1 - params.g * params.x2], droplines: {vertical: 1,horizontal: params.aa1 - params.bb1 * 0 - 0.5 * params.bb1 - params.g * params.x2}, color: Blue, show: params.x1 > 0}
+      - Point: {coordinates: [2, params.aa1 - params.bb1 * 1 - 0.5 * params.bb1 - params.g * params.x2], droplines: {vertical: 2,horizontal: params.aa1 - params.bb1 * 1 - 0.5 * params.bb1 - params.g * params.x2}, color: Blue, show: params.x1 > 1}
+      - Point: {coordinates: [3, params.aa1 - params.bb1 * 2 - 0.5 * params.bb1 - params.g * params.x2], droplines: {vertical: 3,horizontal: params.aa1 - params.bb1 * 2 - 0.5 * params.bb1 - params.g * params.x2}, color: Blue, show: params.x1 > 2}
+      - Point: {coordinates: [4, params.aa1 - params.bb1 * 3 - 0.5 * params.bb1 - params.g * params.x2], droplines: {vertical: 4,horizontal: params.aa1 - params.bb1 * 3 - 0.5 * params.bb1 - params.g * params.x2}, color: Blue, show: params.x1 > 3}
+
+
+    rightGraph:
+      xAxis:
+        title: "` $ X_2 $ `"
+        ticks: 5
+        max: 4.9
+      yAxis:
+        max: 7
+        ticks: 10
+      objects:
+
+# price line X_2
+      - Line:
+            yIntercept: params.p2
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P_2
+              x: 4.5
+              position: b
+
+      - Label:
+            coordinates: [4.9, 0]
+            text: "` \\\\text{birra} `"
+            xPixelOffset: 10
+            position: m
+      - Label:
+            coordinates: [0, 7]
+            text: "` \\\\text{utilità/birra}  `"
+            xPixelOffset: 0
+
+# marginal utility good 2
+      - Point: {coordinates: [1, params.aa2 - params.bb2 * 0 - 0.5 * params.bb2 - params.g * params.x1], droplines: {vertical: 1,horizontal: params.aa2 - params.bb2 * 0 - 0.5 * params.bb2 - params.g * params.x1}, color: Blue, opacity: params.opss}
+      - Point: {coordinates: [2, params.aa2 - params.bb2 * 1 - 0.5 * params.bb2 - params.g * params.x1], droplines: {vertical: 2,horizontal: params.aa2 - params.bb2 * 1 - 0.5 * params.bb2 - params.g * params.x1}, color: Blue, opacity: params.opss}
+      - Point: {coordinates: [3, params.aa2 - params.bb2 * 2 - 0.5 * params.bb2 - params.g * params.x1], droplines: {vertical: 3,horizontal: params.aa2 - params.bb2 * 2 - 0.5 * params.bb2 - params.g * params.x1}, color: Blue, opacity: params.opss}
+      - Point: {coordinates: [4, params.aa2 - params.bb2 * 3 - 0.5 * params.bb2 - params.g * params.x1], droplines: {vertical: 4,horizontal: params.aa2 - params.bb2 * 3 - 0.5 * params.bb2 - params.g * params.x1}, color: Blue, opacity: params.opss}
+      - Point: {coordinates: [1, params.aa2 - params.bb2 * 0 - 0.5 * params.bb2 - params.g * params.x1], droplines: {vertical: 1,horizontal: params.aa2 - params.bb2 * 0 - 0.5 * params.bb2 - params.g * params.x1}, color: Blue, show: params.x2 > 0}
+      - Point: {coordinates: [2, params.aa2 - params.bb2 * 1 - 0.5 * params.bb2 - params.g * params.x1], droplines: {vertical: 2,horizontal: params.aa2 - params.bb2 * 1 - 0.5 * params.bb2 - params.g * params.x1}, color: Blue, show: params.x2 > 1}
+      - Point: {coordinates: [3, params.aa2 - params.bb2 * 2 - 0.5 * params.bb2 - params.g * params.x1], droplines: {vertical: 3,horizontal: params.aa2 - params.bb2 * 2 - 0.5 * params.bb2 - params.g * params.x1}, color: Blue, show: params.x2 > 2}
+      - Point: {coordinates: [4, params.aa2 - params.bb2 * 3 - 0.5 * params.bb2 - params.g * params.x1], droplines: {vertical: 4,horizontal: params.aa2 - params.bb2 * 3 - 0.5 * params.bb2 - params.g * params.x1}, color: Blue, show: params.x2 > 3}
+
+
+
+
+    sidebar:
+      controls:
+      - title: Utilità marginali e scelta ottima
+        description: Aumentare o diminuire le quantità dei due beni fino a individuare la scelta ottima del consumatore.
+        radioGroup:
+          param: dp
+          options:
+            - $ P_1 = 5.49 $
+            - $ P_1 = 6.49 $
+        divs:
+          - html: "` Selezionare il prezzo del bene 1 ($P_1=5.49$ oppure $P_1=6.49$).
+                      Il prezzo del bene 2 è fisso ($P_2=3.99$). `"
+        sliders:
+          - param: x1
+            label: "` X_1 `"
+          - param: x2
+            label: "` X_2 `"
+
+    explanation:
+        divs:
+          - html: "`  `"
+          - html: "`  `"
+          - html: "`  `"
+          - html: "`  `"
+          - html: "`  `"
+          - html: "` Quando $P_1 = ${calcs.pr1}$ e $P_2=${params.p2}$,
+          scegliere $X_1=${params.x1}$ e $X_2=${params.x2}$ <b>non massimizza</b> l'utilità del consumatore. `"
+            show: calcs.mup1 > 0 or calcs.mup2 > 0
+
+          - html: "` <font color=red><b>BINGO!</b></font>
+                  Quando $P_1 = ${calcs.pr1}$ e $P_2=${params.p2}$,
+                  scegliere $X_1=${params.x1}$ e $X_2=${params.x2}$ <b>massimizza</b> l'utilità del consumatore. `"
+            show: calcs.mup1 < 0 and calcs.mup1prev > 0 and calcs.mup2 < 0 and calcs.mup2prev > 0
+
+          - html: "` L'utilità marginale di una unità aggiuntiva del bene 1 è maggiore del suo prezzo:
+                  $ ${calcs.mu1} - ${calcs.pr1} = ${calcs.mup1.toFixed(2)}>0$.
+                  Quindi <b>il consumatore potrebbe aumentare $X_1$ e stare meglio</b>. `"
+            show: calcs.mup1 > 0
+
+          - html: "` L'utilità marginale dell'ultima unità consumata del bene 1 è minore del suo prezzo:
+                  $ ${calcs.mu1prev} - ${calcs.pr1} = ${calcs.mup1prev.toFixed(2)}<0$.
+                  Quindi <b>il consumatore potrebbe ridurre $X_1$ e stare meglio</b>. `"
+            show: calcs.mup1prev < 0
+
+          - html: "` L'utilità marginale di una unità aggiuntiva del bene 1 è minore del suo prezzo: $ ${calcs.mu1} < ${calcs.pr1}$.
+                  L'utilità marginale dell'ultima unità consumata è maggiore: $ ${calcs.mu1prev} > ${calcs.pr1}$.
+                  Quindi <b>il consumatore non può stare meglio aumentando o riducendo $X_1$.</b> `"
+            show: calcs.mup1 < 0 and calcs.mup1prev > 0 and params.x1 > 0
+
+          - html: "` L'utilità marginale di una unità aggiuntiva del bene 1 è minore del suo prezzo: $ ${calcs.mu1} < ${calcs.pr1}$.
+                  Quindi <b>il consumatore non può stare meglio aumentando $X_1$.</b> `"
+            show: calcs.mup1 < 0 and calcs.mup1prev > 0 and params.x1 == 0
+
+          - html: "` L'utilità marginale di una unità aggiuntiva del bene 2 è maggiore del suo prezzo:
+                  $ ${calcs.mu2} - ${params.p2} = ${calcs.mup2.toFixed(2)}>0$.
+                  Quindi <b>il consumatore potrebbe aumentare $X_2$ e stare meglio</b>. `"
+            show: calcs.mup2 > 0
+
+          - html: "` L'utilità marginale dell'ultima unità consumata del bene 2 è minore del suo prezzo:
+                  $ ${calcs.mu2prev} - ${params.p2} = ${calcs.mup2prev.toFixed(2)}<0$.
+                  Quindi <b>il consumatore potrebbe ridurre $X_2$ e stare meglio</b>. `"
+            show: calcs.mup2prev < 0
+
+          - html: "` L'utilità marginale di una unità aggiuntiva del bene 2 è minore del suo prezzo: $ ${calcs.mu2} < ${params.p2}$.
+                  L'utilità marginale dell'ultima unità consumata è maggiore: $ ${calcs.mu2prev} > ${params.p2}$.
+                  Quindi <b>il consumatore non può stare meglio aumentando o riducendo $X_2$.<b> `"
+            show: calcs.mup2 < 0 and calcs.mup2prev > 0 & params.x2 > 0
+
+          - html: "` L'utilità marginale di una unità aggiuntiva del bene 2 è minore del suo prezzo: $ ${calcs.mu2} < ${params.p2}$.
+                  Quindi <b>il consumatore non può stare meglio aumentando $X_2$.<b> `"
+            show: calcs.mup2 < 0 and calcs.mup2prev > 0 & params.x2 == 0
