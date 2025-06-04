@@ -1,0 +1,212 @@
+params:
+- {name: showCS, value: false}
+- {name: p, value: 32.5, min: 5, max: 60, round: 0.5}
+- {name: op1, value: 0.15}
+- {name: op2, value: 0.1}
+- {name: ops, value: 0.2}
+- {name: opss, value: 0.3}
+- {name: opps, value: 0.5}
+
+calcs:
+  surplusAlan: max(0,55-params.p)
+  surplusBruno: max(0,45-params.p)
+  surplusChristian: max(0,35-params.p)
+  surplusAlice: max(0,-10+params.p)
+  surplusBarbara: max(0,-20+params.p)
+  surplusCarmen: max(0,-30+params.p)
+  surplustotale3: calcs.surplusAlan + calcs.surplusBruno + calcs.surplusChristian +
+                calcs.surplusAlice + calcs.surplusBarbara + calcs.surplusCarmen
+  surplustotale2: calcs.surplusAlan + calcs.surplusBruno +
+                calcs.surplusAlice + calcs.surplusBarbara 
+  surplustotale1: calcs.surplusAlan + calcs.surplusAlice 
+
+layout:
+  OneGraphPlusSidebar:
+    graph: 
+      xAxis:
+        max: 5.7
+        ticks: 5
+      yAxis:
+        max: 65
+        ticks: 5
+
+      objects:
+
+        - Label:
+                coordinates: [5.7, 0]
+                text: "` \\\\text{unità} `"
+                yPixelOffset: 0
+                xPixelOffset: -5
+                position: l
+        - Label:
+                coordinates: [0, 65]
+                text: "` \\\\text{euro/unità}  `"
+                xPixelOffset: 0
+
+# price line
+        - Line:
+            yIntercept: params.p
+            color: Green
+            strokeWidth: 1.5
+            label:
+              text: P
+              x: 5.6
+              position: b
+            drag:
+              - vertical: p
+
+
+# WTP
+        - Point: {coordinates: [1,55], r: 5, color: Blue, droplines: {horizontal: 55, vertical: }, label: {text: "` \\\\text{Alan} `", position: b}}
+        - Point: {coordinates: [2,45], r: 5, color: Blue, droplines: {horizontal: 45, vertical: }, label: {text: "` \\\\text{Bruno} `", position: b}}
+        - Point: {coordinates: [3,35], r: 5, color: Blue, droplines: {horizontal: 35, vertical: }, label: {text: "` \\\\text{Christian} `", position: b}}
+        - Point: {coordinates: [4,25], r: 5, color: Blue, droplines: {horizontal: 25, vertical: }, label: {text: "` \\\\text{Diego} `", position: b}}
+        - Point: {coordinates: [5,15], r: 5, color: Blue, droplines: {horizontal: 15, vertical: }, label: {text: "` \\\\text{Eduardo} `", position: b}}
+
+# WTS
+        - Point: {coordinates: [1,10], r: 5, color: Red, droplines: {horizontal: 10, vertical: }, label: {text: "` \\\\text{Alice} `", position: t}}
+        - Point: {coordinates: [2,20], r: 5, color: Red, droplines: {horizontal: 20, vertical: }, label: {text: "` \\\\text{Barbara} `", position: t}}
+        - Point: {coordinates: [3,30], r: 5, color: Red, droplines: {horizontal: 30, vertical: }, label: {text: "` \\\\text{Carmen} `", position: t}}
+        - Point: {coordinates: [4,40], r: 5, color: Red, droplines: {horizontal: 40, vertical: }, label: {text: "` \\\\text{Diana} `", position: t}}
+        - Point: {coordinates: [5,50], r: 5, color: Red, droplines: {horizontal: 50, vertical: }, label: {text: "` \\\\text{Erika} `", position: t}}
+
+# buyer surplus blue
+        - Area: {fn1: + 55, fn2: params.p, fill: Blue, opacity: params.op1, min: 0, max: 1, show: params.p >= 10 && params.p < 55 }
+        - Area: {fn1: + 45, fn2: params.p, fill: Blue, opacity: params.op1, min: 1, max: 2, show: params.p >= 20 && params.p < 45 }
+        - Area: {fn1: + 35, fn2: params.p, fill: Blue, opacity: params.op1, min: 2, max: 3, show: params.p >= 30 && params.p < 35 }
+
+# seller surplus green
+        - Area: {fn1: params.p, fn2: + 10, fill: GreenYellow, opacity: params.opps, min: 0, max: 1, show: params.p <= 55 && params.p > 10 }
+        - Area: {fn1: params.p, fn2: + 20, fill: GreenYellow, opacity: params.opps, min: 1, max: 2, show: params.p <= 45 && params.p > 20 }
+        - Area: {fn1: params.p, fn2: + 30, fill: GreenYellow, opacity: params.opps, min: 2, max: 3, show: params.p <= 35 && params.p > 30 }
+
+# deadweight loss gray
+        - Area: {fn1: + 35, fn2: + 30, fill: Gray , opacity: params.ops, min: 2, max: 3, show: params.p > 35 or params.p < 30 }
+        - Area: {fn1: + 45, fn2: + 20, fill: Gray , opacity: params.ops, min: 1, max: 2, show: params.p > 45 or params.p < 20 }
+        - Area: {fn1: + 55, fn2: + 10, fill: Gray , opacity: params.ops, min: 0, max: 1, show: params.p > 55 or params.p < 10 }
+
+    sidebar:
+      controls:
+      - title: Scambi e surplus con agenti price-taking
+        description: Spostare il cursore (o muovere la retta orizzontale nel grafico) per variare il prezzo.
+        sliders:
+        - param: p
+          label: P
+        divs:
+          - html: "` Surplus individuale: `"
+          - html: "` Alan: $ ${calcs.surplusAlan} \\\\quad $   Diego: 0  `"
+            show: params.p >= 10
+          - html: "` Alan: $ 0 \\\\quad $   Diego: 0 `"
+            show: params.p < 10
+          - html: "` Bruno: $ ${ calcs.surplusBruno } \\\\quad $   Eduardo: 0 `"
+            show: params.p >= 20
+          - html: "` Bruno: $ 0 \\\\quad $   Eduardo: 0 `"
+            show: params.p < 20
+          - html: "` Christian: $ ${ calcs.surplusChristian } $ `"
+            show: params.p >= 30
+          - html: "` Christian: $ 0 $ `"
+            show: params.p < 30
+          - html: "` Alice: $ ${ calcs.surplusAlice } \\\\quad $   Diana: 0 `"
+            show: params.p <= 55
+          - html: "` Alice: $ 0 \\\\quad $   Diana: 0 `"
+            show: params.p > 55
+          - html: "` Barbara: $ ${ calcs.surplusBarbara } \\\\quad $   Erika: 0 `"
+            show: params.p <= 45
+          - html: "` Barbara: $ 0 \\\\quad $   Erika: 0 `"
+            show: params.p > 45
+          - html: "` Carmen: $ ${ calcs.surplusCarmen } $ `"
+            show: params.p <= 35
+          - html: "  Carmen: $ 0 $ " 
+            show: params.p > 35
+          - html: "` <b> Surplus totale: $ ${ calcs.surplustotale3 } $ </b> `"
+            show: params.p >= 30 && params.p <= 35
+          - html: "` <b>Surplus totale: $ ${ calcs.surplustotale2 } $ </b> `"
+            show: ( params.p > 35 and params.p <= 45 ) or ( params.p >= 20 and params.p < 30 )
+          - html: "` <b>Surplus totale: $ ${ calcs.surplustotale1 } $ </b> `"
+            show: ( params.p > 45 and params.p <= 55 ) or ( params.p >= 10 and params.p < 20 )
+          - html: "` <b>Surplus totale: $ 0 $ </b> `"
+            show: params.p > 55 or params.p < 10
+
+    explanation:
+      divs:
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) nessun venditore è disposto a vendere, mentre tutti e cinque i compratori
+        sono disposti a comprare. Non avviene alcuno scambio. La perdita secca è pari a 75 (area grigia).
+        `"
+          show: (params.p < 10) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) solo un venditore (Alice) è  disposto a vendere, mentre tutti e cinque i compratori
+        sono disposti a comprare. Quattro di questi cinque rimangono quindi esclusi dagli scambi. Assumendo che 
+        tale <b>razionamento</b> sia efficiente, cioè che a
+        rimanere esclusi siano quelli disposti a pagare meno (Bruno, Christian, Diego e Eduardo), la perdita secca è pari a 30 (area grigia).
+        `"
+          show: (params.p > 10 and params.p <= 15) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) solo un venditore (Alice) è  disposto a vendere,  mentre quattro compratori
+        (Alan, Bruno, Christian e Diego) sono disposti a comprare. Tre di questi quattro rimangono quindi esclusi dagli scambi. Assumendo che 
+        tale <b>razionamento</b> sia efficiente, cioè che a
+        rimanere esclusi siano quelli disposti a pagare meno (Bruno, Christian e Diego), la perdita secca è pari a 30 (area grigia).
+        `"
+          show: (params.p > 15 and params.p < 20) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) solo due venditori (Alice e Barbara) sono disposti a vendere,  mentre quattro compratori
+        (Alan, Bruno, Christian e Diego) sono disposti a comprare. Due di questi quattro rimangono quindi esclusi dagli scambi. Assumendo che 
+        tale <b>razionamento</b> sia efficiente, cioè che a
+        rimanere esclusi siano quelli disposti a pagare meno (Christian e Diego), la perdita secca è pari a 5 (area grigia).
+        `"
+          show: (params.p >= 20 and params.p <= 25) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) solo due venditori (Alice e Barbara) sono disposti a vendere,  mentre tre compratori
+        (Alan, Bruno e Christian) sono disposti a comprare. Uno di questi tre rimane quindi escluso dagli scambi. Assumendo che 
+        tale <b>razionamento</b> sia efficiente, cioè che a
+        rimanere escluso sia quello disposto a pagare meno (Christian), la perdita secca è pari a 5 (area grigia).
+        `"
+          show: (params.p > 25 and params.p < 30) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) tre venditori (Alice, Barbara e Carmen) sono disposti a vendere e tre compratori
+        (Alan, Bruno e Christian) sono disposti a comprare. Il mercato è in equilibrio. `"
+          show: (params.p >= 30 and params.p <= 35) 
+        - html: "`  `"
+          show: (params.p >= 30 and params.p <= 35) 
+        - html: "`  `"
+          show: (params.p >= 30 and params.p <= 35) 
+        - html: "`  `"
+          show: (params.p >= 30 and params.p <= 35) 
+        - html: "`  `"
+          show: (params.p >= 30 and params.p <= 35) 
+        - html: "`  `"
+          show: (params.p >= 30 and params.p <= 35) 
+        - html: "`  `"
+          show: (params.p >= 30 and params.p <= 35) 
+        - html: "`  `"
+          show: (params.p >= 30 and params.p <= 35) 
+        - html: "`  `"
+          show: (params.p >= 30 and params.p <= 35) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) solo due compratori (Alan e Bruno) sono disposti a comprare,  mentre tre venditori
+        (Alice, Barbara e Carmen) sono disposti a vendere. Uno di questi tre rimane quindi escluso dagli scambi. Assumendo che 
+        a rimanere escluso sia quello meno disposto a vendere (Carmen), la perdita secca è pari a 5 (area grigia).
+        `"
+          show: (params.p > 35 and params.p < 40) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) solo due compratori (Alan e Bruno) sono disposti a comprare,  mentre quattro venditori
+        (Alice, Barbara, Carmen e Diana) sono disposti a vendere. Due di questi quattro rimangono quindi esclusi dagli scambi. Assumendo che 
+        a rimanere esclusi siano quelli meno disposti a vendere (Carmen e Diana), la perdita secca è pari a 5 (area grigia).
+        `"
+          show: (params.p >= 40 and params.p <= 45) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) solo un compratore (Alan) è disposto a comprare,  mentre quattro venditori
+        (Alice, Barbara, Carmen e Diana) sono disposti a vendere. Tre di questi quattro rimangono quindi esclusi dagli scambi. Assumendo che 
+        a rimanere esclusi siano quelli meno disposti a vendere (Barbara, Carmen e Diana), la perdita secca è pari a 30 (area grigia).
+        `"
+          show: (params.p > 45 and params.p < 50) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) solo un compratore (Alan) è disposto a comprare,  mentre tutti e cinque i venditori
+        sono disposti a vendere. Quattro di questi cinque rimangono quindi esclusi dagli scambi. Assumendo che 
+        a rimanere esclusi siano quelli meno disposti a vendere (Barbara, Carmen, Diana e Erika), la perdita secca è pari a 30 (area grigia).
+        `"
+          show: (params.p >= 50 and params.p <= 55) 
+
+        - html: "` A questo prezzo ($P=${params.p.toFixed(1)}$) nessun compratore è disposto a comprare,  mentre tutti e cinque i venditori
+        sono disposti a vendere. Non avviene alcuno scambio. La perdita secca è pari a 75 (area grigia).
+        `"
+          show: (params.p > 55) 

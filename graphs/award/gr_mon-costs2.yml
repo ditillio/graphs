@@ -1,0 +1,249 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: cap, value: 20, min: 0, max: 30}
+
+- {name: dslope, value: 0.05, min: 0.02, max: 0.08, round: 0.01} # abs value of slope of inverse demand
+- {name: dint, value: 10, min: 8, max: 12} # intercept of inverse demand
+- {name: fc, value: 100} # fixed cost per plant
+- {name: a, value: 80} # plant productivity parameter
+- {name: w, value: 64} # wage
+- {name: np, value: 1, min: 1, max: 4} # number of plants
+
+- {name: mcslope, value: 0.5} # slope of marginal cost function
+
+- {name: dslopefix, value: 0.04, min: 0.02, max: 0.08, round: 0.01} # abs value of slope of inverse demand
+- {name: dintfix, value: 12, min: 8, max: 12} # intercept of inverse demand
+- {name: mcfix, value: 0.5} # slope of marginal cost function
+
+
+- {name: Q, value: 200, min: 150, max: 250, round: 10} # level of production
+- {name: percent1, value: 30, min: 0, max: 100,round: 5} # share of production produced in plant 1
+- {name: maxQ, value: 300} # max displayed quantity
+- {name: maxEUR, value: 850} # max displayed cost
+
+
+
+
+
+
+
+calcs:
+
+  share1: (params.percent1)/100
+
+  Q1: (calcs.share1)*(params.Q) # output of plant 1
+  Q2: (1-(calcs.share1))*(params.Q) # output of plant 2
+
+  C1: (params.fc)+(params.w)*((calcs.Q1)^2)/((params.a)^2) # cost of plant 1
+  C2: (params.fc)+(params.w)*((calcs.Q2)^2)/((params.a)^2) # cost of plant 2
+  C: calcs.C1+calcs.C2
+
+  vc: (params.w) / ((params.a)^(2))
+
+
+
+
+
+# aspectRatio: 1
+
+layout:
+
+  type: TwoHorizontalGraphsPlusSidebar
+
+  def:
+
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: (params.maxQ)
+        ticks: 0
+        title: Stabilimento A
+      yAxis:
+        orient: left
+        min: 0
+        max: (params.maxEUR)
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [params.maxQ, 0]
+            text: Q_A
+      - Label:
+            coordinates: [0,params.maxEUR]
+            text: "` \\\\text{euro} `"
+
+
+
+# cost function in plant 1
+      - Curve:
+          fn: (params.fc) + (params.w) * ( ((x)^2) / ((params.a)^2) )
+          color: Red
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: "` C_\\\\text{A} `"
+            x: params.maxQ
+      - Point:
+          coordinates: [0, (0.85)*(params.fc)]
+          droplines:
+            horizontal: params.fc
+          color: Red
+          r: 0
+
+# output and cost in plant 1
+      - Point:
+          coordinates: [calcs.Q1, calcs.C1]
+          droplines:
+            vertical: calcs.Q1.toFixed(2)
+            horizontal: calcs.C1.toFixed(2)
+          color: Red
+          r: 3.5
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: (params.maxQ)
+        ticks: 0
+        title: Stabilimento B
+      yAxis:
+        orient: left
+        min: 0
+        max: (params.maxEUR)
+        ticks: 0
+
+
+      objects:
+
+      - Label:
+            coordinates: [params.maxQ, 0]
+            text: Q_B
+      - Label:
+            coordinates: [0,params.maxEUR]
+            text: "` \\\\text{euro} `"
+
+
+# cost function in plant 2
+      - Curve:
+          fn: (1) * (params.fc) + ( (params.w) / (1) ) * ( ((x)^2) / ((params.a)^2) )
+          color: Red
+          strokeWidth: 1.5
+          position: c
+          label:
+            text: "` C_\\\\text{B} `"
+            x: params.maxQ
+      - Point:
+          coordinates: [0, (0.85)*(params.fc)]
+          droplines:
+            horizontal: params.fc
+          color: Red
+          r: 0
+
+# output and cost in plant 1
+      - Point:
+          coordinates: [calcs.Q2, calcs.C2]
+          droplines:
+            vertical: calcs.Q2.toFixed(2)
+            horizontal: calcs.C2.toFixed(2)
+          color: Red
+          r: 3.5
+
+
+    # leftControls:
+    #   title: Funzione di costo del monopolista
+    #   sliders:
+    #   - param: share1
+    #     label: "` s `"
+
+    # rightControls:
+    #   title: Funzione di costo del monopolista
+    #   sliders:
+    #   - param: share1
+    #     label: "` s `"
+
+    sidebar:
+      controls:
+
+      - title: Costi di produzione con due unità produttive
+        sliders:
+        - param: Q
+          label: Q
+        - param: percent1
+          label: "` \\\\text{ $\\\\%$ stabil. A} `"
+
+        # checkboxes:
+        # - param: showCS
+        #   label: "` \\\\text{Mostra surplus del consumatore} `"
+        # - param: showPS
+        #   label: "` \\\\text{Mostra surplus del monopolista} `"
+        # - param: showDWL
+        #   label: "` \\\\text{Mostra perdita secca} `"
+
+        divs:
+        - html: "` Il costo necessario a produrre ${params.Q} unità, il ${params.percent1}% delle quali
+                  (${calcs.Q1.toFixed(2)} unità) nello stabilimento A, e le altre (${calcs.Q2.toFixed(2)} unità)
+                  nello stabilimento B, è pari a
+                  $$
+                  ${calcs.C1.toFixed(2)}+${calcs.C2.toFixed(2)} = ${calcs.C.toFixed(2)}
+                  $$
+                  `"
+        - html: "` È possibile produrre ${params.Q} unità ad un costo minore! `"
+          show: params.percent1 !== 50
+        - html: "` <font color=red><b>BINGO!</b></font> Non è possibile produrre ${params.Q} unità ad un costo minore. `"
+          show: params.percent1 == 50
+    explanation:
+      divs:
+        - html: "`   `"
+        - html: "`   `"
+        - html: "`   `"
+        - html: "`   `"
+        - html: "`   `"
+        - html: "` Il monopolista utilizza due stabilimenti, A e B, ugualmente produttivi.
+                     `"
+        - html: "` Indicando con $L_\\\\text{A}$ 
+                  e $L_\\\\text{B}$
+                  le giornate di lavoro 
+                  impiegate nelle due unità produttive, i livelli di produzione sono
+                  $$
+                  Q_\\\\text{A}=${params.a}\\\\sqrt{L_\\\\text{A}}
+                  \\\\qquad
+                  Q_\\\\text{B}=${params.a}\\\\sqrt{L_\\\\text{B}}
+                  $$
+                     `"
+        - html: "` Il costo fisso di ciascuno stabilimento è $FC=${params.fc}$,
+                    mentre il salario giornaliero è $W=${params.w}$.  
+                     `"
+        - html: "` Produrre
+                  $Q_\\\\text{A}$ unità di output nello stabilimento A
+                  e $Q_B$ unità nello stabilimento B richiede quindi un costo pari a
+                  $$
+                  ${params.fc}+(${params.w}/${params.a}^2)Q^2_\\\\text{A}
+                  \\\\quad + \\\\quad
+                  ${params.fc}+(${params.w}/${params.a}^2)Q^2_\\\\text{B}
+                  \\\\quad = \\\\quad
+                  ${(2)*params.fc}+(${params.w}/${params.a}^2)
+                  \\\\big(Q^2_\\\\text{A}+Q^2_\\\\text{B}\\\\big)
+                  $$
+                   `"
+
+
+
+
+
+
+

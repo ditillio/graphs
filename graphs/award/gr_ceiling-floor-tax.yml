@@ -1,0 +1,531 @@
+---
+schema: EconSchema
+version: 1
+params:
+
+- {name: cap, value: 8, min: 2, max: 10}
+- {name: floor, value: 4, min: 2, max: 10}
+- {name: T, value: 0, min: 0, max: 8}
+
+- {name: dint, value: 12} # intercept of inverse demand
+- {name: dslope, value: 0.1} # abs value of slope of inverse demand
+- {name: sslope, value: 0.1} #  slope of inverse supply
+
+- {name: showCS, value: 1}
+- {name: showPS, value: 1}
+- {name: showDWL, value: 1}
+- {name: showTAXREV, value: 1}
+
+calcs:
+
+  maxQ: (1.1)*(params.dint)/(params.dslope) # max displayed quantity
+  maxP: (1.1)*(params.dint) # max displayed price
+
+  eqQ0: (params.dint)/((params.dslope)+(params.sslope)) # eq qty w/o interventions
+  eqP0: (params.dint)-(params.dslope)*(calcs.eqQ0) # eq price w/o interventions
+
+# calculations for price ceiling
+  Q0s: (params.cap)/(params.sslope) # quantity supplied at price ceiling
+  PSceiling: (min(calcs.Q0s,calcs.eqQ0))*(min(params.cap,calcs.eqP0))/2
+  CSceiling: ((params.dint)-min(params.cap,calcs.eqP0)+(params.dint)-(params.dslope)*min(calcs.eqQ0,calcs.Q0s)-min(params.cap,calcs.eqP0))*(min(calcs.Q0s,calcs.eqQ0))/2
+  TSceiling: calcs.PSceiling + calcs.CSceiling
+
+# calculations for price floor
+  Q0d: ((params.dint)-(params.floor))/(params.dslope) # quantity demanded at price floor
+  CSfloor: (min(calcs.Q0d,calcs.eqQ0))*((params.dint)-max(params.floor,calcs.eqP0))/2
+  PSfloor: (max(params.floor,calcs.eqP0)+max(params.floor,calcs.eqP0)-(params.sslope)*min(calcs.Q0d,calcs.eqQ0))*(min(calcs.Q0d,calcs.eqQ0))/2
+  TSfloor: calcs.PSfloor + calcs.CSfloor
+
+# calculations for tax
+  eqQtax: ((params.dint)-(params.T))/((params.dslope)+(params.sslope))
+  eqPcons: (params.dint)-(params.dslope)*(calcs.eqQtax) # price paid by consumers
+  eqPfirm: (params.sslope)*(calcs.eqQtax) # price received by firms
+  CStax: ((params.dint)-(calcs.eqPcons))*(calcs.eqQtax)/2
+  PStax: (calcs.eqPfirm)*(calcs.eqQtax)/2
+  taxrev: (params.T)*(calcs.eqQtax) 
+  TStax: calcs.PStax + calcs.CStax + calcs.taxrev
+
+
+
+
+
+
+
+
+
+
+# aspectRatio: 1
+
+layout:
+
+  type: ThreeHorizontalGraphs
+
+  def:
+
+
+    leftGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: calcs.maxP
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [calcs.maxQ, 0]
+            text: "` \\\\text{unità} `"
+            xPixelOffset: 1
+      - Label:
+            coordinates: [0, calcs.maxP]
+            text: "` \\\\text{€/unità}  `"
+
+# market demand 
+      - Line:
+          yIntercept: params.dint
+          slope: -params.dslope
+          color: Blue
+          strokeWidth: 2
+          position: bl
+          label:
+            text: D
+            x: (0.9)*(params.dint)/(params.dslope)
+      - Point:
+          coordinates: [0, params.dint]
+          droplines:
+            horizontal: params.dint
+          color: Blue
+          r: 0
+
+# market supply
+      - Line:
+          yIntercept: 0
+          slope: params.sslope
+          color: Red
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 2
+          position: c
+          label:
+            text: S
+            x: (params.dint)/(params.dslope)
+
+# price cap
+      - Line:
+          yIntercept: params.cap
+          max: (0.9)*(params.dint)/(params.dslope)
+          color: Purple
+          label:
+            text: P_\text{max}
+            x: (0.8)*(calcs.maxQ)
+            position: l
+          strokeWidth: 1
+          bgcolor: none
+          drag:
+            - vertical: cap
+      - Point:
+          coordinates: [0, params.cap]
+          droplines:
+            vertical: 
+            horizontal: params.cap
+          color: Purple
+          r: 0
+
+# market equilibrium without intervention
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqP0]
+          droplines:
+            vertical: calcs.eqQ0
+            horizontal: calcs.eqP0
+          color: Green
+          r: 5
+          show: params.cap >= calcs.eqP0
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqP0]
+          droplines:
+            vertical: calcs.eqQ0
+            horizontal: calcs.eqP0
+          color: grey
+          r: 3
+          show: params.cap < calcs.eqP0
+
+# supply with binding price ceiling
+      - Point:
+          coordinates: [calcs.Q0s, params.cap]
+          droplines:
+            vertical: calcs.Q0s
+          color: Green
+          r: 4
+          show: params.cap < calcs.eqP0
+
+# consumer surplus
+      - Area:
+          fn1: (params.dint)-(params.dslope)*(x)
+          fn2: min(params.cap,calcs.eqP0)
+          fill: blue
+          min: 0
+          max: min(calcs.Q0s,calcs.eqQ0)
+          show: params.showCS == 1
+
+# producer surplus
+      - Area:
+          fn1: min(params.cap,calcs.eqP0)
+          fn2: (params.sslope)*(x)
+          fill: green
+          min: 0
+          max: min(calcs.Q0s,calcs.eqQ0)
+          show: params.showPS == 1
+
+# deadweight loss
+      - Area:
+          fn1: (params.dint) - (params.dslope)*(x)
+          fn2: (params.sslope)*(x)
+          fill: grey
+          min: calcs.Q0s
+          max: calcs.eqQ0
+          show: params.showDWL == 1 && params.cap < calcs.eqP0
+
+      - Segment:
+          a: [calcs.Q0s,params.cap]
+          b: [calcs.Q0s,(params.dint)-(params.dslope)*(calcs.Q0s)]
+          color: grey
+          lineStyle: dotted
+          show: (params.showCS)+(params.showDWL) > 0 && params.cap < calcs.eqP0
+
+
+
+
+
+
+
+
+
+
+
+    middleGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: calcs.maxP
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [calcs.maxQ, 0]
+            text: "` \\\\text{unità} `"
+            xPixelOffset: 1
+      - Label:
+            coordinates: [0, calcs.maxP]
+            text: "` \\\\text{€/unità}  `"
+            xPixelOffset: -5
+
+# market demand 
+      - Line:
+          yIntercept: params.dint
+          slope: -params.dslope
+          color: Blue
+          strokeWidth: 2
+          position: bl
+          label:
+            text: D
+            x: (0.9)*(params.dint)/(params.dslope)
+      - Point:
+          coordinates: [0, params.dint]
+          droplines:
+            horizontal: params.dint
+          color: Blue
+          r: 0
+
+# market supply
+      - Line:
+          yIntercept: 0
+          slope: params.sslope
+          color: Red
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 2
+          position: c
+          label:
+            text: S
+            x: (params.dint)/(params.dslope)
+
+# market equilibrium without intervention
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqP0]
+          droplines:
+            vertical: calcs.eqQ0
+            horizontal: calcs.eqP0
+          color: Green
+          r: 5
+          show: params.floor <= calcs.eqP0
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqP0]
+          droplines:
+            vertical: calcs.eqQ0
+            horizontal: calcs.eqP0
+          color: grey
+          r: 3
+          show: params.floor > calcs.eqP0
+
+# price floor
+      - Line:
+          yIntercept: params.floor
+          max: (0.9)*(params.dint)/(params.dslope)
+          color: Purple
+          label:
+            text: P_\text{min}
+            x: (0.8)*(calcs.maxQ)
+            position: l
+          strokeWidth: 1
+          bgcolor: none
+          drag:
+            - vertical: floor
+      - Point:
+          coordinates: [0, params.floor]
+          droplines:
+            vertical: 
+            horizontal: params.floor
+          color: Purple
+          r: 0
+
+# demand with binding price floor
+      - Point:
+          coordinates: [calcs.Q0d, params.floor]
+          droplines:
+            vertical: calcs.Q0d
+          color: Green
+          r: 4
+          show: params.floor > calcs.eqP0
+
+# consumer surplus
+      - Area:
+          fn1: (params.dint)-(params.dslope)*(x)
+          fn2: max(params.floor,calcs.eqP0)
+          fill: blue
+          min: 0
+          max: min(calcs.Q0d,calcs.eqQ0)
+          show: params.showCS == 1
+
+# producer surplus
+      - Area:
+          fn1: max(params.floor,calcs.eqP0)
+          fn2: (params.sslope)*(x)
+          fill: green
+          min: 0
+          max: min(calcs.Q0d,calcs.eqQ0)
+          show: params.showPS == 1
+
+# deadweight loss
+      - Area:
+          fn1: (params.dint) - (params.dslope)*(x)
+          fn2: (params.sslope)*(x)
+          fill: grey
+          min: calcs.Q0d
+          max: calcs.eqQ0
+          show: params.showDWL == 1 && params.floor > calcs.eqP0
+
+
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        orient: bottom
+        min: 0
+        max: calcs.maxQ
+        ticks: 0
+      yAxis:
+        orient: left
+        min: 0
+        max: calcs.maxP
+        ticks: 0
+
+      objects:
+
+      - Label:
+            coordinates: [calcs.maxQ, 0]
+            text: "` \\\\text{unità} `"
+            xPixelOffset: 1
+      - Label:
+            coordinates: [0, calcs.maxP]
+            text: "` \\\\text{€/unità}  `"
+            xPixelOffset: -5
+
+# market demand 
+      - Line:
+          yIntercept: params.dint
+          slope: -params.dslope
+          color: Blue
+          strokeWidth: 2
+          position: bl
+          label:
+            text: D
+            x: (0.9)*(params.dint)/(params.dslope)
+      - Point:
+          coordinates: [0, params.dint]
+          droplines:
+            horizontal: params.dint
+          color: Blue
+          r: 0
+
+# market supply
+      - Line:
+          yIntercept: params.T
+          slope: params.sslope
+          color: Red
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 2
+          position: c
+          label:
+            text: S
+            x: min( (params.dint)/(params.dslope) , ((calcs.maxP)-(params.T))/(params.sslope) )
+      - Point:
+          coordinates: [0, params.T]
+          droplines:
+            horizontal: params.T
+          color: Red
+          r: 0
+          show: params.who == 1
+
+# shadow market supply
+      - Line:
+          yIntercept: 0
+          slope: params.sslope
+          color: Red
+          max: (params.dint)/(params.dslope)
+          strokeWidth: 0.75
+          lineStyle: dashed
+          show: params.T > 0
+#       - Arrow:
+#           begin: [85,(85)*(params.sslope)]
+#           end: [85,(85)*(params.sslope)+(params.T)]
+# #          double: true
+#           color: black
+#           strokeWidth: 1
+#           trim: 0.1
+#           show: params.T > 0
+
+# market equilibrium without intervention
+      - Point:
+          coordinates: [calcs.eqQ0, calcs.eqP0]
+          droplines:
+            vertical: calcs.eqQ0
+            horizontal: calcs.eqP0
+          color: grey
+          r: 3
+          show: params.T > 0
+
+# market equilibrium with tax on producer
+      - Point:
+          coordinates: [calcs.eqQtax, calcs.eqPcons]
+          droplines:
+            vertical: calcs.eqQtax
+            horizontal: calcs.eqPcons
+          color: Green
+          r: 4
+      - Point:
+          coordinates: [calcs.eqQtax, calcs.eqPfirm]
+          droplines:
+            horizontal: calcs.eqPfirm
+          color: grey
+          r: 3
+          show: params.T > 0
+
+# consumer surplus
+      - Area:
+          fn1: (params.dint)-(params.dslope)*(x)
+          fn2: calcs.eqPcons
+          fill: blue
+          min: 0
+          max: calcs.eqQtax
+          show: params.showCS == 1
+
+# producer surplus
+      - Area:
+          fn1: calcs.eqPfirm
+          fn2: (params.sslope)*(x)
+          fill: green
+          min: 0
+          max: calcs.eqQtax
+          show: params.showPS == 1
+
+# tax revenue
+      - Area:
+          fn1: calcs.eqPcons
+          fn2: calcs.eqPfirm
+          fill: Yellow
+          min: 0
+          max: calcs.eqQtax
+          show: params.showTAXREV == 1
+
+# deadweight loss
+      - Area:
+          fn1: (params.dint) - (params.dslope)*(x)
+          fn2: (params.sslope)*(x)
+          fill: grey
+          min: calcs.eqQtax
+          max: calcs.eqQ0
+          show: params.showDWL == 1
+
+
+
+
+
+
+
+
+
+
+    leftControls:
+      title: Prezzo massimo
+      sliders:
+      - param: cap
+        label: P_\text{max}
+      divs:
+      - html: "` Surplus del consumatore: ${calcs.CSceiling} `"
+      - html: "` Surplus del produttore: ${calcs.PSceiling} `"
+      - html: "` Surplus totale: ${calcs.TSceiling} `"
+
+    middleControls:
+      title: Prezzo minimo
+      sliders:
+      - param: floor
+        label: P_\text{min}
+      divs:
+      - html: "` Surplus del consumatore: ${calcs.CSfloor} `"
+      - html: "` Surplus del produttore: ${calcs.PSfloor} `"
+      - html: "` Surplus totale: ${calcs.TSfloor} `"
+
+    rightControls:
+      title: Accisa su produzione
+      sliders:
+      - param: T
+        label: T
+      divs:
+      - html: "` Surplus del consumatore: ${calcs.CStax} `"
+      - html: "` Surplus del produttore: ${calcs.PStax} `"
+      - html: "` Gettito fiscale: ${calcs.taxrev} `"
+      - html: "` Surplus totale: ${calcs.TStax} `"
+
+
+
+
+
+
+

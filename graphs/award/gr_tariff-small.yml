@@ -1,0 +1,408 @@
+schema: EconSchema
+params:
+
+- {name: T, value: 0, min: 0, max: 4, round: 1}
+- {name: showPS, value: false}
+- {name: showCS, value: false}
+- {name: showTAXREV, value: false}
+- {name: showDWL, value: false}
+
+- {name: nd, value: 20} # number of domestic firms
+- {name: nf, value: 20} # number of foreign firms
+
+- {name: ndslope, value: 1} # abs value slope of inverse national demand
+- {name: dint, value: 12} # intercept of inverse demand (both national and world)
+- {name: nsslope, value: 2} # slope of inverse national supply
+
+- {name: wdslope, value: 1} # abs value slope of inverse world demand
+- {name: wsslope, value: 0.5} # slope of inverse world supply
+
+calcs:
+  eqwQ: (params.dint)/((params.wdslope)+(params.wsslope)) # equilibrium world quantity
+  eqwP: (params.wsslope)*(calcs.eqwQ) # equilibrium world price
+
+  eqQs: ((calcs.eqwP)+(params.T))/(params.nsslope) # equilibrium national supplied quantity
+
+  eqQ: ((params.dint)-(params.T)-(calcs.eqwP))/(params.ndslope) # equilibrium national quantity
+  eqQ0d: ((params.dint)-(calcs.eqwP))/(params.ndslope) # equilibrium national demanded quantity w/o tariff
+  eqQ0s: (calcs.eqwP)/(params.nsslope) # equilibrium national supplied quantity w/o tariff
+
+
+  maxwQ: (1.25)*(calcs.eqwQ) # max displayed world quantity
+  maxP: (1.1)*(params.dint) # max displayed price
+
+  maxQ: (calcs.maxwQ)
+
+  eqP: (params.dint)-(params.dslope)*(calcs.eqQ) # eq price with both dom & foreign
+  eqPd: (10*(params.dint))/(10+(params.dslope)*(params.nd)) # eq price with only domestic
+  eqQd: (params.dint)/(params.dslope)-(calcs.eqPd)/(params.dslope) # eq qty with only domestic
+
+
+
+
+
+layout:
+  TwoHorizontalGraphsPlusSidebar:
+
+    leftGraph:
+      xAxis:
+        max: (calcs.maxQ)
+        ticks: 0
+        title: tonnellate
+      yAxis:
+        max: calcs.maxP
+        ticks: 0
+        title: euro/chilo
+
+      objects:
+      # - Label:
+      #         coordinates: [(calcs.maxQ), 0]
+      #         text: "` \\\\text{t} `"
+      #         yPixelOffset: 0
+      #         xPixelOffset: 0
+      # - Label:
+      #         coordinates: [0, calcs.maxP]
+      #         text: "` \\\\text{€/kg}  `"
+      #         xPixelOffset: 0
+
+# national demand
+      - Line:
+          yIntercept: (params.dint)-(params.T)
+          slope: -params.wdslope
+          color: Blue
+          strokeWidth: 2
+          max: (0.9)*(calcs.maxQ)
+          label:
+            text: D_N
+            x: (0.95)*(calcs.maxQ)
+            position: b
+      - Point:
+          coordinates: [0, params.dint]
+          droplines: {horizontal: params.dint}
+          color: Gray
+          r: 0
+          show: params.T > 0
+      - Point:
+          coordinates: [0, (params.dint)-(params.T)]
+          droplines: {horizontal: (params.dint)-(params.T)}
+          color: Blue
+          r: 0
+          show: calcs.eqQs !== calcs.eqQ
+
+# shadow national demand
+      - Line:
+          yIntercept: (params.dint)
+          slope: -params.wdslope
+          color: Blue
+          strokeWidth: 0.5
+          lineStyle: dashed
+          show: params.T > 0
+      - Point:
+          coordinates: [calcs.eqQ0d, calcs.eqwP]
+          color: Gray
+          r: 3
+          show: params.T > 0
+      - Point:
+          coordinates: [calcs.eqQ, (calcs.eqwP)+(params.T)]
+          color: Gray
+          r: 3
+          show: params.T > 0
+
+# shadow national demanded quantity
+      - Point:
+          coordinates: [calcs.eqQ0d, calcs.eqwP]
+          droplines: {vertical: calcs.eqQ0d}
+          color: Gray
+          r: 0
+          show: params.T > 0
+
+# national supply
+      - Line:
+          yIntercept: 0
+          slope: params.nsslope
+          color: Red
+          strokeWidth: 2
+          label:
+            text: S_N
+            y: calcs.maxP
+      - Point:
+          coordinates: [calcs.eqQs, (calcs.eqwP)+(params.T)]
+          color: Red
+          droplines: {vertical: calcs.eqQs}
+          r: 3
+          xPixelOffset: 2
+          show: calcs.eqQs !== calcs.eqQ
+      - Segment:
+          a: [0, (calcs.eqwP)+(params.T)]
+          b: [calcs.eqQ, (calcs.eqwP)+(params.T)]
+          color: Green
+          lineStyle: dotted
+          show: params.T > 0
+
+# shadow national supplied quantity
+      - Point:
+          coordinates: [calcs.eqQ0s, calcs.eqwP]
+          droplines: {vertical: calcs.eqQ0s}
+          color: Gray
+          r: 0
+          xPixelOffset: -2
+          show: params.T > 0
+
+# world price line
+      - Line:
+          yIntercept: (calcs.eqwP)
+          slope: 0
+          color: Green
+          lineStyle: dotted
+      - Point:
+          coordinates: [0, calcs.eqwP]
+          droplines: {horizontal: calcs.eqwP}
+          # droplines: {horizontal: "` P_W=${calcs.eqwP} `"}
+          color: Green
+          r: 0
+
+# national equilibrium price
+      - Point:
+          coordinates: [0, calcs.eqwP+params.T]
+          color: Green
+          r: 0
+          droplines: {horizontal: "` P_W+T=${calcs.eqwP+params.T} `"}
+          show: params.T > 0
+
+# national equilibrium quantity
+      - Point:
+          coordinates: [calcs.eqQ, calcs.eqwP]
+          color: Green
+          r: 3
+      - Segment:
+          a: [calcs.eqQ,(params.dint)-(params.ndslope)*(calcs.eqQ)]
+          b: [calcs.eqQ,0]
+          color: Green
+          lineStyle: dotted
+      - Point:
+          coordinates: [calcs.eqQ, 0]
+          droplines: {vertical: calcs.eqQ}
+          color: Green
+          r: 0
+
+# national consumer surplus
+      - Area:
+          fn1: (params.dint) - (params.ndslope)*(x)
+          fn2: (calcs.eqwP)+(params.T)
+          max: calcs.eqQ
+          fill: blue
+          above: false
+          show: params.showCS == true
+
+# national producer surplus
+      - Area:
+          fn1: (calcs.eqwP)+(params.T)
+          fn2: (params.nsslope)*(x)
+          max: calcs.eqQs
+          fill: green
+          above: false
+          show: params.showPS == true
+
+# national tax revenue
+      - Area:
+          fn1: (calcs.eqwP)+(params.T)
+          fn2: (calcs.eqwP)
+          min: calcs.eqQs
+          max: calcs.eqQ
+          fill: Yellow
+          above: false
+          show: params.showTAXREV == true
+
+# deadweight loss
+      - Area:
+          fn1: (params.nsslope)*(x)
+          fn2: (calcs.eqwP)
+          min: calcs.eqQ0s
+          max: calcs.eqQs
+          fill: grey
+          above: false
+          show: params.showDWL == true
+      - Area:
+          fn1: (params.dint)-(params.ndslope)*(x)
+          fn2: (calcs.eqwP)
+          min: calcs.eqQ
+          max: calcs.eqQ0d
+          fill: grey
+          above: false
+          show: params.showDWL == true
+
+# import
+      - Arrow:
+          begin: [calcs.eqQs,1]
+          end: [calcs.eqQ,1]
+          double: true
+          color: black
+          strokeWidth: 1.5
+          show: calcs.eqQs < calcs.eqQ
+      - Label:
+          coordinates: [(calcs.eqQs+calcs.eqQ)/2, 1]
+          text: "` \\\\text{imp.} `"
+          yPixelOffset: 15
+          xPixelOffset: 0
+          show: calcs.eqQs < calcs.eqQ
+
+    leftControls:
+      title: Mercato nazionale
+      checkboxes:
+      - param: showCS
+        label: "\\text{Mostra surplus cons.}"
+      - param: showPS
+        label: "\\text{Mostra surplus prod.}"
+      - param: showTAXREV
+        label: "\\text{Mostra gettito fiscale}"
+      - param: showDWL
+        label: "\\text{Mostra perdita secca}"
+
+
+
+
+
+
+
+
+
+
+    rightGraph:
+      xAxis:
+        max: (calcs.maxwQ)
+        ticks: 0
+        title: migliaia di tonnellate
+      yAxis:
+        max: calcs.maxP
+        ticks: 0
+        title: euro/chilo
+
+      objects:
+      # - Label:
+      #         coordinates: [(calcs.maxwQ), 0]
+      #         text: "` \\\\text{kt} `"
+      #         yPixelOffset: 0
+      #         xPixelOffset: 0
+      # - Label:
+      #         coordinates: [0, calcs.maxP]
+      #         text: "` \\\\text{€/kg}  `"
+      #         xPixelOffset: 0
+
+# world demand
+      - Line:
+          yIntercept: (params.dint)
+          slope: -params.wdslope
+          color: Blue
+          strokeWidth: 2
+          label:
+            text: D_W
+            x: (calcs.maxwQ)
+      - Point:
+          coordinates: [0, params.dint]
+          droplines: {horizontal: params.dint}
+          color: Blue
+          r: 0
+
+# world supply
+      - Line:
+          yIntercept: 0
+          slope: params.wsslope
+          color: Red
+          strokeWidth: 2
+          label:
+            text: S_W
+            x: calcs.maxwQ
+
+# world equilibrium 
+      - Point:
+          coordinates: [calcs.eqwQ, calcs.eqwP]
+          droplines: {horizontal: calcs.eqwP, vertical: calcs.eqwQ}
+          color: Green
+          r: 3
+
+    rightControls:
+      title: Mercato mondiale
+
+
+
+
+
+    sidebar:
+      controls:
+      - title: Impatto di un dazio in una piccola economia aperta
+        sliders:
+        - param: T
+          label: T
+        # divs:
+        #   - html: "` Quando $T=${params.T}$, il surplus del consumatore è `"
+        #     show: params.showCS == true
+        #   - html: "` Quando $T=${params.T}$, il surplus del produttore è `"
+        #     show: params.showPS == true
+        divs:
+          - html: "`La domanda nazionale è pari a 1/1000 di quella mondiale, 
+                    l'offerta nazionale a 1/4000 di quella mondiale. `"
+            show: params.T == 0
+          - html: "`In assenza di dazi, il prezzo pagato
+                    dai consumatori nazionali è il prezzo determinato a livello mondiale, 
+                    $ P_W=${calcs.eqwP}$ €/kg.
+                    A questo prezzo la domanda nazionale  è pari a 
+                    ${calcs.eqQ} tonnellate, mentre la produzione nazionale è pari a ${calcs.eqQs} tonnellate.
+                    Le importazioni sono quindi pari a  
+                    $ ${calcs.eqQ}-${calcs.eqQs}=${calcs.eqQ-calcs.eqQs} $ tonnellate. `"
+            show: params.T == 0
+
+          - html: "` Un dazio di $T=${params.T}$ €/kg fa aumentare il prezzo pagato dai consumatori 
+                    nazionali a $ P_W+T= ${calcs.eqwP+params.T}$ €/kg.
+                    La produzione nazionale aumenta a ${calcs.eqQs} tonnellate.
+                    Le importazioni diminuiscono a 
+                    $ ${calcs.eqQ}-${calcs.eqQs}=${calcs.eqQ-calcs.eqQs} $ tonnellate.
+                    Il gettito fiscale è quindi pari a 
+                    $ ${params.T} * ${calcs.eqQ-calcs.eqQs} = ${(params.T)*(calcs.eqQ-calcs.eqQs)} $ 
+                    migliaia di euro. `"
+            show: params.T > 0 && calcs.eqQs !== calcs.eqQ
+
+          - html: "` Un dazio di $T=${params.T}$ €/kg esclude completamente i produttori esteri
+                    dal mercato nazionale. Le importazioni e quindi il gettito fiscale derivante
+                    dal dazio sono quindi pari a zero.
+                    La perdita secca di benessere nel paese è massima.
+                    Un dazio ancora più alto avrebbe esattamente gli stessi
+                    effetti.
+                    `"
+            show: calcs.eqQs == calcs.eqQ
+
+
+    # explanation:
+    #   divs:
+    #     - html: "`La domanda nazionale costituisce solo un 1/1000 di quella mondiale, 
+    #               l'offerta nazionale 1/4000 di quella mondiale. In assenza di dazi, il prezzo pagato
+    #               dai consumatori nazionali è il prezzo determinato a livello mondiale, 
+    #               $ P_W=${calcs.eqwP}$ €/kg.
+    #               A questo prezzo la domanda nazionale  è pari a 
+    #               ${calcs.eqQ} tonnellate, mentre la produzione nazionale è pari a ${calcs.eqQs} tonnellate.
+    #               Le importazioni sono quindi pari a  
+    #               $ ${calcs.eqQ}-${calcs.eqQs}=${calcs.eqQ-calcs.eqQs} $ tonnellate. `"
+    #       show: params.T == 0
+
+    #     - html: "` Un dazio di $T=${params.T}$ €/kg fa aumentare il prezzo pagato dai consumatori 
+    #               nazionali a $ P_W+T= ${calcs.eqwP+params.T}$ €/kg.
+    #               La produzione nazionale aumenta a ${calcs.eqQs} tonnellate.
+    #               Le importazioni diminuiscono a 
+    #               $ ${calcs.eqQ}-${calcs.eqQs}=${calcs.eqQ-calcs.eqQs} $ tonnellate.
+    #               Il gettito fiscale è quindi pari a 
+    #               $ ${params.T} * ${calcs.eqQ-calcs.eqQs} = ${(params.T)*(calcs.eqQ-calcs.eqQs)} $ 
+    #               migliaia di €. `"
+    #       show: params.T > 0 && calcs.eqQs !== calcs.eqQ
+
+    #     - html: "` Un dazio di $T=${params.T}$ €/kg esclude completamente i produttori esteri
+    #               dal mercato nazionale. Le importazioni e quindi il gettito fiscale derivante
+    #               dal dazio sono quindi pari a zero.
+    #               La perdita secca di benessere nel paese è massima.
+    #               Un dazio ancora più alto avrebbe esattamente gli stessi
+    #               effetti.
+    #               `"
+    #       show: calcs.eqQs == calcs.eqQ
+
+
+
+
+
